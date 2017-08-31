@@ -1,0 +1,32 @@
+﻿<Window x:Class="OmronPLCTemperatureReader.Views.AddEditSerieWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OmronPLCTemperatureReader.Views"
+        mc:Ignorable="d"
+        Title="{Binding WindowTitle}" Height="300" Width="277.154"
+        x:Name="Window">
+    <Grid>
+        <Label x:Name="labelName" Content="Nazwa serii" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="labelDm" Content="Numer DM" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="textBoxName" Height="23" Margin="85,14,10,0" TextWrapping="Wrap" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top"/>
+        <TextBox x:Name="textBoxDm" Height="23" Margin="85,72,10,0" TextWrapping="Wrap" Text="{Binding Dm, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top"/>
+        <Button x:Name="buttonSave" Content="Zapisz" Margin="10,0,0,10" Command="{Binding Save}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Left" Width="75" Height="20" VerticalAlignment="Bottom"/>
+        <Button x:Name="buttonCancel" Content="Anuluj" Margin="0,0,10,10" Command="{Binding Cancel}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom"/>
+        <Label x:Name="labeNameError" Content="{Binding Path=PropertyErrors[Name]}" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top" Foreground="Red" Width="auto"/>
+        <Label x:Name="labelDmError" Content="{Binding Path=PropertyErrors[Dm]}" HorizontalAlignment="Left" Margin="10,94,0,0" VerticalAlignment="Top" Foreground="Red" Width="auto"/>
+        <Separator Margin="10,0,10,43" Height="1" VerticalAlignment="Bottom"/>
+        <!--<ListBox x:Name="listBox" HorizontalAlignment="Left" Height="200" Margin="182,10,0,0" VerticalAlignment="Top" Width="100">
+            <StackPanel Height="auto" Width="auto">
+                <Rectangle Width="85" Height="22" Fill="Red">
+                    <Rectangle.InputBindings>
+                        <MouseBinding Command="{Binding ColorPicker}" MouseAction="LeftClick"/>
+                    </Rectangle.InputBindings>
+                </Rectangle>
+            </StackPanel>
+        </ListBox>-->
+
+
+    </Grid>
+</Window>

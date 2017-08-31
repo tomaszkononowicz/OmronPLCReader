@@ -1,0 +1,113 @@
+﻿<Window x:Class="OmronPLCTemperatureReader.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OmronPLCTemperatureReader"
+        mc:Ignorable="d"
+        Title="Omron PLC Temperature Reader" Height="700" Width="1300">
+    <Grid>
+        <StackPanel x:Name="stackPanelSettings" Margin="10,10,0,0" HorizontalAlignment="Left" Width="250" Height="649" VerticalAlignment="Top">
+            <GroupBox x:Name="groupBoxConnection" Header="Połączenie" Height="126">
+                <Grid>
+                    <Label x:Name="labelIP" Content="IP" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="28"/>
+                    <Label x:Name="labelPort" Content="Port" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="44"/>
+                    <Label x:Name="connectionStatus" Content="Rozłączony" HorizontalAlignment="Left" Margin="120,67,0,0" VerticalAlignment="Top" Width="108"/>
+                    <Button x:Name="connectDisconnect" Content="Połącz" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Width="105" Command="{Binding Path=ConnectDisconect}"/>
+                    <TextBox x:Name="textBoxIP" HorizontalAlignment="Left" Height="23" Margin="62,14,0,0" TextWrapping="Wrap" Text="{Binding Ip, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="166"/>
+                    <TextBox x:Name="textBoxPort" HorizontalAlignment="Left" Height="23" Margin="62,42,0,0" TextWrapping="Wrap" Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="166"/>
+                    <Label x:Name="labelIPError" HorizontalAlignment="Left" Margin="228,10,-600,0"  Content="{Binding Path=PropertyErrors[Ip]}" VerticalAlignment="Top" Foreground="Red" Width="auto"/>
+                    <Label x:Name="labelPortError" HorizontalAlignment="Left" Margin="228,38,-600,0"  Content="{Binding Path=PropertyErrors[Port]}" VerticalAlignment="Top" Foreground="Red" Width="auto"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="groupBoxPlot" Header="Ustawienia wykresu" Height="70">
+                <Grid>
+                    <Label x:Name="labelInterval" Content="Czas próbkowania [s]" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="143"/>
+                    <TextBox x:Name="textBoxInterval" HorizontalAlignment="Left" Height="23" Margin="158,14,0,0" TextWrapping="Wrap" Text="{Binding Interval, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="70"/>
+                    <Label x:Name="labelIntervalError" HorizontalAlignment="Left" Margin="228,10,-600,0"  Content="{Binding Path=PropertyErrors[Interval]}" VerticalAlignment="Top" Foreground="Red" Width="auto"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="groupBoxSeries" Header="Serie">
+                <StackPanel>
+                    <DataGrid ItemsSource="{Binding Series}" MaxHeight="385" HeadersVisibility="Column" HorizontalContentAlignment="Stretch" AutoGenerateColumns="False" ColumnWidth="*" CanUserDeleteRows="False" CanUserResizeRows="False" SelectionMode="Single" IsReadOnly="True" Margin="5" SelectedItem="{Binding SelectedItem}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Nazwa" Binding="{Binding Path=Name}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Visibility}" Value="false">
+                                                <Setter Property="TextDecorations" Value="Strikethrough"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Width="60" Header="Wartość" Binding="{Binding Path=LastValue}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Visibility}" Value="false">
+                                                <Setter Property="TextDecorations" Value="Strikethrough"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="buttonAddSerie" Content="Dodaj" Margin="2" Grid.Column="0" Command="{Binding Path=AddSerie}"/>
+                        <Button x:Name="buttonShowHideShowSerie" Content="{Binding ButtonHideShowSerieContent}" Margin="2" Grid.Column="1" Command="{Binding Path=HideShowSerie}" CommandParameter="{Binding Path=SelectedItem}"/>
+                        <Button x:Name="buttonEditSerie" Content="Edytuj" Margin="2" Grid.Column="2" Command="{Binding Path=EditSerie}" CommandParameter="{Binding Path=SelectedItem}"/>
+                        <Button x:Name="buttonDeleteSerie" Content="Usuń" Margin="2" Grid.Column="3" Command="{Binding Path=DeleteSerie}" CommandParameter="{Binding Path=SelectedItem}"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+        <TabControl x:Name="tabControl" Margin="265,10,10,10" TabStripPlacement="Bottom">
+            <TabItem Header="Wykres">
+                <Grid Background="#FFE5E5E5">
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Tabela">
+                <Grid Background="#FFE5E5E5">
+                    <ListView ItemsSource="{Binding TableView}">
+                        <!--Copy feature-->
+                        <!--
+                        SelectedItem="" 
+                        <ListView.InputBindings>
+                            <KeyBinding Command="{Binding Copy}" Key="C" Modifiers="Ctrl"/>
+                        </ListView.InputBindings>
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Copy" Command="{Binding Copy}"/>
+                            </ContextMenu>
+                        </ListView.ContextMenu>-->
+                        <ListView.View>
+                            <GridView>
+                                <GridView.Columns>
+                                    <GridViewColumn Width="200" DisplayMemberBinding="{Binding Date, StringFormat='{}{0:dd.MM.yyyy HH:mm:ss}'}" >
+                                        <GridViewColumnHeader Content="Czas" Command="{Binding SortTableView}" CommandParameter="Date"/>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="300" DisplayMemberBinding="{Binding Serie}">
+                                        <GridViewColumnHeader Content="Seria" Command="{Binding SortTableView}" CommandParameter="Serie"/>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="300" DisplayMemberBinding="{Binding Value}">
+                                        <GridViewColumnHeader Content="Wartość" Command="{Binding SortTableView}" CommandParameter="Value"/>
+                                    </GridViewColumn>
+                                </GridView.Columns>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OmronPLCTemperatureReader.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,16 +14,26 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace OmronPLCTemperatureReader
+namespace OmronPLCTemperatureReader.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {
+    {     
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainWindowViewModel();    
+               
         }
+
+        ///
+        /// TODO: Lista co poprawić po ukończeniu prjektu
+        /// Walidacja wpisanych danych na jakąś normalną
+        /// PropertyErrors jako Interfejs
+        ///
+
+
     }
 }
