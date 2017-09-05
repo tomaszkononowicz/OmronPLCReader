@@ -14,7 +14,8 @@ namespace OmronPLCTemperatureReader.Models
         public string color;
         public ObservableCollection<KeyValuePair<DateTime, int>> Data { get; set; }
         public bool Visibility { get; set; }
-        public uint Dm { get; set; }
+        public ushort Dm { get; set; }
+        public double Multiplication { get; set; }
 
 
         public Serie(string name)
@@ -22,6 +23,7 @@ namespace OmronPLCTemperatureReader.Models
             Data = new ObservableCollection<KeyValuePair<DateTime, int>>();
             Name = name;
             Visibility = true;
+            Multiplication = 1;
         }
 
         public Serie(string name, int lastValue)
@@ -30,6 +32,7 @@ namespace OmronPLCTemperatureReader.Models
             Name = name;
             LastValue = lastValue;
             Visibility = true;
+            Multiplication = 1;
         }
 
         public void add(DateTime dateTime, int value)

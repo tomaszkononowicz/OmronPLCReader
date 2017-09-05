@@ -17,87 +17,63 @@ namespace OmronPLCTemperatureReader.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        #region UI properties with errors and validation
-
-        public Dictionary<string, string> PropertyErrors { get; set; }
+        #region UI properties
 
         private IPAddress ip;
-        private string _ip;
-        public string Ip
+        public IPAddress Ip
         {
-            get { return (_ip != null) ? _ip : ""; }
+            get { return ip; }
             set
             {
-                if (Regex.IsMatch(value, @"^0*(25[0-5]|2[0-4]\d|1?\d\d?)(\.0*(25[05]|2[0-4]\d|1?\d\d?)){3}$"))
-                {
-                    ip = IPAddress.Parse(value);
-                    PropertyErrors.Remove("Ip");
-                }
-                else
-                {
-                    PropertyErrors["Ip"] = "Niepoprawny format adresu IP: 4 liczby z zakresu 0-255 oddzielone kropkami np. 192.168.0.1";
-                }
-                SetProperty(ref _ip, value);
-                OnPropertyChanged("PropertyErrors");
-
+                ip = value;
+                SetProperty(ref ip, value);
             }
         }
 
         private UInt16 port;
-        private string _port;
-        public string Port
+        public UInt16 Port
         {
-            get { return (_port != null) ? _port : ""; }
+            get { return port; }
             set
             {
-                try
-                {
-                    port = UInt16.Parse(value);
-                    PropertyErrors.Remove("Port");
-                }
-                catch
-                {
-                    PropertyErrors["Port"] = "Niepoprawny format portu, proszę podać liczbę z zakresu od 1 do 65535";
-                }
-                finally
-                {
-                    SetProperty(ref _port, value);
-                    OnPropertyChanged("PropertyErrors");
-                }
+                port = value;
+                SetProperty(ref port, value);
             }
-            
         }
 
         private int interval;
-        private string _interval;
-        public string Interval
+        public int Interval
         {
-            get { return (_interval != null) ? _interval : ""; }
+            get { return interval; }
             set
             {
-                try
-                {
-                    interval = int.Parse(value);
-                    PropertyErrors["Interval"] = "";
-                }
-                catch
-                {
-                    PropertyErrors["Interval"] = "Niepoprawny format czasu, proszę podać liczbę sekund z zakresu od 1 do 3600";
-                }
-                finally
-                {
-                    SetProperty(ref _interval, value);
-                    OnPropertyChanged("PropertyErrors");
-                }
+                interval = value;
+                SetProperty(ref interval, value);
             }
         }
 
-        private bool connected;
+        public string ButtonHideShowSerieContent
+        {
+            get
+            {
+                if (selectedItem != null && !selectedItem.Visibility) return "Pokaz";
+                return "Ukryj";
+            }
+        }
+        public string ButtonConnectDisconnectContent
+        {
+            get { return model.Connected ? "Rozłącz" : "Połącz"; }
+        }
+        public bool CanEditConnectionSetting
+        {
+            get { return !model.Connected; }
+        }
+
         public string ConnectionStatus
         {
             get
             {
-                if (connected) return "Połączony";
+                if (model.Connected) return "Połączony";
                 return "Rozłączony";
             }
         }
@@ -120,14 +96,6 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         public RelayCommand ConnectDisconect { get; set; }
         public RelayCommand AddSerie { get; set; }
-        public string ButtonHideShowSerieContent
-        {
-            get
-            {
-                if (selectedItem != null && !selectedItem.Visibility) return "Pokaz";
-                return "Ukryj";
-            }
-        }
         public RelayCommand HideShowSerie { get; set; }
         public RelayCommand EditSerie { get; set; }
         public RelayCommand DeleteSerie { get; set; }
@@ -137,7 +105,6 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private bool CanConnectDisconect(object obj)
         {
-            if (PropertyErrors.ContainsKey("Ip") || PropertyErrors.ContainsKey("Port")) return false;
             return true;
         }
         private bool CanAddSerie(object obj)
@@ -162,7 +129,7 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         #endregion
 
-        Model model;
+        Plc model = new Plc();
 
         private bool? ascending;
         private string sortKey;
@@ -177,7 +144,7 @@ namespace OmronPLCTemperatureReader.ViewModels
                             {
                                 Date = d.Key,
                                 Serie = s.Name,
-                                Value = d.Value
+                                Value = d.Value * s.Multiplication
                             }).ToList();
                 if (ascending == true)
                 {
@@ -221,7 +188,8 @@ namespace OmronPLCTemperatureReader.ViewModels
             }
         }
 
-        private Timer timer;
+        private Timer getValuesTimer;
+        private Timer connectionStatusTimer;
 
 
         Serie suszarka;
@@ -230,12 +198,9 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         public MainWindowViewModel()
         {
-            PropertyErrors = new Dictionary<string, string>();
-            Port = "0";
-            Ip = "0.0.0.0";
-            Interval = "1";
-            connected = false;
-            model = new Model();
+            Port = 9600;
+            Ip = IPAddress.Parse("192.168.1.130");
+            Interval = 1;
 
             ConnectDisconect = new RelayCommand(ConnectDisconectAction, CanConnectDisconect);
             AddSerie = new RelayCommand(AddSerieAction, CanAddSerie);
@@ -246,12 +211,53 @@ namespace OmronPLCTemperatureReader.ViewModels
             Copy = new RelayCommand(CopyAction, CanCopy);
             Series = new ObservableCollection<Serie>();
             suszarka = new Serie("Suszarka", 150);
-            timer = new Timer();
-            timer.Interval = interval*100;
-            timer.Elapsed += Timer_Elapsed;
-            timer.Enabled = true;
+            getValuesTimer = new Timer();
+            getValuesTimer.Elapsed += GetValuesTimer_Elapsed;
+            connectionStatusTimer = new Timer();
+            connectionStatusTimer.Elapsed += ConnectionStatusTimer_Elapsed;
+            connectionStatusTimer.Interval = 3000;
+            connectionStatusTimer.Enabled = true;
 
             Series.Add(suszarka);
+        }
+
+        private void GetValuesTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            OnPropertyChanged("ConnectionStatus");
+            OnPropertyChanged("ButtonConnectDisconnectContent");
+            OnPropertyChanged("CanEditConnectionSetting");
+            if (model.Connected)
+            {
+                for (int i = 0; i < Series.Count; i++)
+                {
+                    Serie serie = Series[i];
+                    int? value = model.getValue(serie.Dm);
+                    if (value != null)
+                    {
+                        int _value = (int)value;
+                        DateTime now = DateTime.Now;
+                        serie.add(now, _value);
+                        serie.LastValue = _value;
+                        try
+                        {
+                            Application.Current.Dispatcher.BeginInvoke(new Action(() => CollectionViewSource.GetDefaultView(Series).Refresh()));
+                        }
+                        catch { }
+
+                        if (SelectedItemTableView == null)
+                        {
+                            OnPropertyChanged("TableView");
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ConnectionStatusTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            OnPropertyChanged("ConnectionStatus");
+            OnPropertyChanged("ButtonConnectDisconnectContent");
+            OnPropertyChanged("CanEditConnectionSetting");
         }
 
         private bool CanCopy(object obj)
@@ -279,37 +285,30 @@ namespace OmronPLCTemperatureReader.ViewModels
             OnPropertyChanged("TableView");
         }
 
-
-
-        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            foreach (Serie serie in Series)
-            {
-                int value = model.getValue(serie.Dm);
-                DateTime now = DateTime.Now;
-                serie.add(now, value);
-                serie.LastValue = value;
-                try
-                {
-                    Application.Current.Dispatcher.BeginInvoke(new Action(() => CollectionViewSource.GetDefaultView(Series).Refresh()));
-                }
-                catch { }
-
-                if (SelectedItemTableView == null)
-                {
-                    OnPropertyChanged("TableView");
-                }
-            }
-        }
-
         private void ConnectDisconectAction(object obj)
         {
-            throw new NotImplementedException();
+            if (model.Connected)
+            {
+                if (model.disconnect())
+                {
+                    getValuesTimer.Enabled = false;
+                }
+            } else
+            {
+                if (model.connect(ip, port))
+                {
+                    getValuesTimer.Interval = interval * 1000;
+                    getValuesTimer.Enabled = true;
+                }
+            }
+            OnPropertyChanged("ConnectionStatus");
+            OnPropertyChanged("ButtonConnectDisconnectContent");
+            OnPropertyChanged("CanEditConnectionSetting");
         }
 
         private void AddSerieAction(object obj)
         {
-            Serie newSerie = new Serie("New Serie");
+            Serie newSerie = new Serie("Nowa seria");
             Nullable<bool> dialogResult = new AddEditSerieWindow(ref newSerie).ShowDialog();
             if (dialogResult == true)
             {

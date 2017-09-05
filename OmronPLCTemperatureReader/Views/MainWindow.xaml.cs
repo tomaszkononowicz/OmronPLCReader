@@ -30,8 +30,14 @@ namespace OmronPLCTemperatureReader.Views
 
         ///
         /// TODO: Lista co poprawić po ukończeniu prjektu
-        /// Walidacja wpisanych danych na jakąś normalną
-        /// PropertyErrors jako Interfejs
+        /// Zrzucanie do pliku danych
+        /// Normalne uruchamianie nowego okna
+        /// Ile może być maks DMów (65535?)
+        /// Tooltipy np przy mnożniku
+        /// 
+        /// 194.187.238.5
+        /// Port 9600
+        /// DM 2068
         ///
 
 

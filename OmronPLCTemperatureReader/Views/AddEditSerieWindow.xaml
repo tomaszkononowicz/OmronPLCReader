@@ -4,19 +4,55 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OmronPLCTemperatureReader.Views"
+        xmlns:rule="clr-namespace:OmronPLCTemperatureReader.Common.ValidationRules"
         mc:Ignorable="d"
         Title="{Binding WindowTitle}" Height="300" Width="277.154"
         x:Name="Window">
     <Grid>
         <Label x:Name="labelName" Content="Nazwa serii" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="labelDm" Content="Numer DM" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="textBoxName" Height="23" Margin="85,14,10,0" TextWrapping="Wrap" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top"/>
-        <TextBox x:Name="textBoxDm" Height="23" Margin="85,72,10,0" TextWrapping="Wrap" Text="{Binding Dm, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top"/>
-        <Button x:Name="buttonSave" Content="Zapisz" Margin="10,0,0,10" Command="{Binding Save}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Left" Width="75" Height="20" VerticalAlignment="Bottom"/>
+        <Label x:Name="labelDm" Content="Numer DM" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="textBoxName" Height="23" Margin="85,14,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource textBoxError}">
+            <TextBox.Text>
+                <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <rule:TextValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" MaxLength="28" ErrorMessage="Nazwa serii zbyt długa (maksymalnie 28 znaków)"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <TextBox x:Name="textBoxDm" Height="23" Margin="85,42,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource textBoxError}">
+            <TextBox.Text>
+                <Binding Path="Dm" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <rule:IntegerValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" MinValue="1" MaxValue="65535" ErrorMessage="Wartość powinna być z przedziału od 1 do 65535"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <Label x:Name="labelMultiplication" Content="Mnożnik danych" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="comboBoxMultiplication" Margin="112,70,10,0" VerticalAlignment="Top" Height="26" IsReadOnly="True" ItemsSource="{Binding Multiplication}" DisplayMemberPath="Key" SelectedItem="{Binding MultiplicationSelectedItem}"/>
+        <Button x:Name="buttonSave" Content="Zapisz" Margin="10,0,0,10" Command="{Binding Save}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Left" Width="75" Height="20" VerticalAlignment="Bottom">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="IsEnabled" Value="false" />
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <Setter Property="IsEnabled" Value="true" />
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ElementName=textBoxName, Path=(Validation.HasError)}" Value="false" />
+                                <Condition Binding="{Binding ElementName=textBoxDm, Path=(Validation.HasError)}" Value="false" />
+                                <Condition Binding="{Binding ElementName=comboBoxMultiplication, Path=(Validation.HasError)}" Value="false" />
+                            </MultiDataTrigger.Conditions>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
         <Button x:Name="buttonCancel" Content="Anuluj" Margin="0,0,10,10" Command="{Binding Cancel}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom"/>
-        <Label x:Name="labeNameError" Content="{Binding Path=PropertyErrors[Name]}" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top" Foreground="Red" Width="auto"/>
-        <Label x:Name="labelDmError" Content="{Binding Path=PropertyErrors[Dm]}" HorizontalAlignment="Left" Margin="10,94,0,0" VerticalAlignment="Top" Foreground="Red" Width="auto"/>
+
         <Separator Margin="10,0,10,43" Height="1" VerticalAlignment="Bottom"/>
+        
+
         <!--<ListBox x:Name="listBox" HorizontalAlignment="Left" Height="200" Margin="182,10,0,0" VerticalAlignment="Top" Width="100">
             <StackPanel Height="auto" Width="auto">
                 <Rectangle Width="85" Height="22" Fill="Red">

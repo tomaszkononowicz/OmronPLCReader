@@ -2,6 +2,7 @@
 using OmronPLCTemperatureReader.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,56 +13,30 @@ namespace OmronPLCTemperatureReader.ViewModels
     public class SerieViewModel : ViewModelBase
     {
 
-        #region UI properties with errors and validation
+        #region UI properties
 
-        public Dictionary<string, string> PropertyErrors { get; set; }
-
+        public ObservableCollection<KeyValuePair<string, double>> Multiplication { get; set; }
+        public KeyValuePair<string, double> MultiplicationSelectedItem { get; set; }
 
         private string name;
-        private string _name;
         public string Name
         {
-            get { return (_name != null) ? _name : ""; }
+            get { return name; }
             set
             {
-                _name = value;               
-                if (String.IsNullOrEmpty(value))
-                {
-                    PropertyErrors["Name"] = "To pole nie może zostać puste";
-                }
-                else
-                {
-                    name = value;
-                    PropertyErrors.Remove("Name");
-                }
-                SetProperty(ref _name, value);
-                OnPropertyChanged("PropertyErrors");
+                name = value;               
+                SetProperty(ref name, value);
             }
         }
-        private uint dm;
-        private string _dm;
-        public string Dm
+        private ushort dm;
+        public ushort Dm
         {
-            get { return (_dm != null) ? _dm : ""; }
+            get { return dm; }
             set
             {
-                _dm = value;
-                try
-                {
-                    dm = uint.Parse(value);
-                    PropertyErrors.Remove("Dm");
-                }
-                catch
-                {
-                    PropertyErrors["Dm"] = "Proszę podać liczbę większą od 0";
-                }
-                finally
-                {
-                    SetProperty(ref _dm, value);
-                    OnPropertyChanged("PropertyErrors");
-                }
+                dm = value;
+                SetProperty(ref dm, value);
             }
-
         }
 
         #endregion
@@ -93,6 +68,7 @@ namespace OmronPLCTemperatureReader.ViewModels
         {
             Serie.Name = name;
             Serie.Dm = dm;
+            Serie.Multiplication = MultiplicationSelectedItem.Value;
             Window window = obj as Window;
             window.DialogResult = true;
             window.Close();
@@ -105,11 +81,28 @@ namespace OmronPLCTemperatureReader.ViewModels
         public Serie Serie { get; set; }
         public SerieViewModel(ref Serie serie)
         {
-            PropertyErrors = new Dictionary<string, string>();
             WindowTitle = serie.Name;
             Serie = serie;
             Name = serie.Name;
-            Dm = serie.Dm.ToString();
+            Dm = serie.Dm;
+            Multiplication = new ObservableCollection<KeyValuePair<string, double>>()
+            {
+                new KeyValuePair<string, double>("1000", 1000),
+                new KeyValuePair<string, double>("100", 100),
+                new KeyValuePair<string, double>("10", 10),
+                new KeyValuePair<string, double>("1 (Brak mnożnika)", 1),
+                new KeyValuePair<string, double>("0,1", 0.1),
+                new KeyValuePair<string, double>("0,01", 0.01),
+                new KeyValuePair<string, double>("0,001", 0.001)
+            };
+            try
+            {
+                double multiplication = serie.Multiplication;
+                MultiplicationSelectedItem = Multiplication.Where(x => x.Value.Equals(multiplication)).First();
+            } catch
+            {
+                MultiplicationSelectedItem = new KeyValuePair<string, double>("1 (Brak mnożnika)", 1);
+            }
             Save = new RelayCommand(SaveAction, CanSave);
             Cancel = new RelayCommand(CancelAction, CanCancel);
         }

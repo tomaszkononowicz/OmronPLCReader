@@ -4,29 +4,81 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OmronPLCTemperatureReader"
+        xmlns:rule="clr-namespace:OmronPLCTemperatureReader.Common.ValidationRules"
+        xmlns:converter="clr-namespace:OmronPLCTemperatureReader.Common.Converters"
         mc:Ignorable="d"
         Title="Omron PLC Temperature Reader" Height="700" Width="1300">
+
+
     <Grid>
-        <StackPanel x:Name="stackPanelSettings" Margin="10,10,0,0" HorizontalAlignment="Left" Width="250" Height="649" VerticalAlignment="Top">
-            <GroupBox x:Name="groupBoxConnection" Header="Połączenie" Height="126">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="265"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel x:Name="stackPanelSettings" Margin="10,10,5,10" Height="649" VerticalAlignment="Top" Grid.Column="0">
+            <GroupBox x:Name="groupBoxConnection" Header="Połączenie" Height="auto">
                 <Grid>
                     <Label x:Name="labelIP" Content="IP" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="28"/>
                     <Label x:Name="labelPort" Content="Port" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="44"/>
-                    <Label x:Name="connectionStatus" Content="Rozłączony" HorizontalAlignment="Left" Margin="120,67,0,0" VerticalAlignment="Top" Width="108"/>
-                    <Button x:Name="connectDisconnect" Content="Połącz" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Width="105" Command="{Binding Path=ConnectDisconect}"/>
-                    <TextBox x:Name="textBoxIP" HorizontalAlignment="Left" Height="23" Margin="62,14,0,0" TextWrapping="Wrap" Text="{Binding Ip, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="166"/>
-                    <TextBox x:Name="textBoxPort" HorizontalAlignment="Left" Height="23" Margin="62,42,0,0" TextWrapping="Wrap" Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="166"/>
-                    <Label x:Name="labelIPError" HorizontalAlignment="Left" Margin="228,10,-600,0"  Content="{Binding Path=PropertyErrors[Ip]}" VerticalAlignment="Top" Foreground="Red" Width="auto"/>
-                    <Label x:Name="labelPortError" HorizontalAlignment="Left" Margin="228,38,-600,0"  Content="{Binding Path=PropertyErrors[Port]}" VerticalAlignment="Top" Foreground="Red" Width="auto"/>
+                    <Label x:Name="connectionStatus" Content="{Binding ConnectionStatus}" HorizontalAlignment="Left" Margin="120,101,0,0" VerticalAlignment="Top" Width="108" Height="27"/>
+                    <Button x:Name="connectDisconnect" Content="{Binding ButtonConnectDisconnectContent}" HorizontalAlignment="Left" Margin="10,104,0,0" VerticalAlignment="Top" Width="105" Command="{Binding Path=ConnectDisconect}" Height="24">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="IsEnabled" Value="false" />
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <Setter Property="IsEnabled" Value="true" />
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding ElementName=textBoxIP, Path=(Validation.HasError)}" Value="false" />
+                                            <Condition Binding="{Binding ElementName=textBoxPort, Path=(Validation.HasError)}" Value="false" />
+                                            <Condition Binding="{Binding ElementName=textBoxInterval, Path=(Validation.HasError)}" Value="false" />
+                                        </MultiDataTrigger.Conditions>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <TextBox x:Name="textBoxIP" Height="23" Margin="62,14,10,0" TextWrapping="Wrap" VerticalAlignment="Top" IsEnabled="{Binding CanEditConnectionSetting}" Style="{StaticResource textBoxError}">
+                        <TextBox.Text>
+                            <Binding Path="Ip" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.Converter>
+                                    <converter:IPAddressConverter/>
+                                </Binding.Converter>
+                                <Binding.ValidationRules>
+                                    <rule:IPValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" ErrorMessage="Adres IP jest niepoprawny"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <TextBox x:Name="textBoxPort" Height="23" Margin="62,42,10,0" TextWrapping="Wrap" VerticalAlignment="Top" IsEnabled="{Binding CanEditConnectionSetting}" Style="{StaticResource textBoxError}">
+                        <TextBox.Text>
+                            <Binding Path="Port" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <rule:IntegerValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" MinValue="1024" MaxValue="65535" ErrorMessage="Numer portu musi być z przedziału od 1024 do 65535"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <Label x:Name="labelInterval" Content="Czas próbkowania [s]" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Width="143"/>
+                    <TextBox x:Name="textBoxInterval" Height="23" Margin="153,73,10,0" TextWrapping="Wrap" VerticalAlignment="Top"  IsEnabled="{Binding CanEditConnectionSetting}" Style="{StaticResource textBoxError}">
+                        <TextBox.Text>
+                            <Binding Path="Interval" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <rule:IntegerValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" MinValue="1" MaxValue="600" ErrorMessage="Wartość powinna być z przedziału od 1 do 600"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <!--Accepts tabs Accepts returns-->
                 </Grid>
             </GroupBox>
-            <GroupBox x:Name="groupBoxPlot" Header="Ustawienia wykresu" Height="70">
+            <!--<GroupBox x:Name="groupBoxPlot" Header="Ustawienia wykresu" Height="70">
                 <Grid>
-                    <Label x:Name="labelInterval" Content="Czas próbkowania [s]" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="143"/>
-                    <TextBox x:Name="textBoxInterval" HorizontalAlignment="Left" Height="23" Margin="158,14,0,0" TextWrapping="Wrap" Text="{Binding Interval, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="70"/>
-                    <Label x:Name="labelIntervalError" HorizontalAlignment="Left" Margin="228,10,-600,0"  Content="{Binding Path=PropertyErrors[Interval]}" VerticalAlignment="Top" Foreground="Red" Width="auto"/>
+                    
                 </Grid>
-            </GroupBox>
+            </GroupBox>-->
             <GroupBox x:Name="groupBoxSeries" Header="Serie">
                 <StackPanel>
                     <DataGrid ItemsSource="{Binding Series}" MaxHeight="385" HeadersVisibility="Column" HorizontalContentAlignment="Stretch" AutoGenerateColumns="False" ColumnWidth="*" CanUserDeleteRows="False" CanUserResizeRows="False" SelectionMode="Single" IsReadOnly="True" Margin="5" SelectedItem="{Binding SelectedItem}">
@@ -70,11 +122,10 @@
                 </StackPanel>
             </GroupBox>
         </StackPanel>
-        <TabControl x:Name="tabControl" Margin="265,10,10,10" TabStripPlacement="Bottom">
+        <GridSplitter Width="5" HorizontalAlignment="Stretch" Grid.Column="1"/>
+        <TabControl x:Name="tabControl" Margin="5,10,10,10" TabStripPlacement="Bottom" Grid.Column="2">
             <TabItem Header="Wykres">
-                <Grid Background="#FFE5E5E5">
-
-                </Grid>
+                <Grid Background="#FFE5E5E5"/>
             </TabItem>
             <TabItem Header="Tabela">
                 <Grid Background="#FFE5E5E5">

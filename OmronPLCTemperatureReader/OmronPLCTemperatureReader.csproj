@@ -63,6 +63,9 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="mc.Omron.v1.00">
+      <HintPath>Libraries\mc.Omron.v1.00.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -83,8 +86,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Commands\RelayCommand.cs" />
-    <Compile Include="Models\Model.cs" />
+    <Compile Include="Common\Converters\IPAddressConverter.cs" />
+    <Compile Include="Common\RelayCommand.cs" />
+    <Compile Include="Common\ValidationRules\TextValidation.cs" />
+    <Compile Include="Common\ValidationRules\IPValidation.cs" />
+    <Compile Include="Common\ValidationRules\IntegerValidation.cs" />
+    <Compile Include="Models\Plc.cs" />
     <Compile Include="Models\Serie.cs" />
     <Compile Include="ViewModels\SerieViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
@@ -107,6 +114,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\Resources\TextBoxError.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
@@ -149,6 +160,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Libraries\mc.Omron.v1.00.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
