@@ -256,12 +256,6 @@
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
                                 <Button x:Name="buttonNewArchiveWindow" Content="Otwórz" Margin="2" Grid.Column="0" Grid.Row="0" Command="{Binding Path=OpenArchive}"/>
-                                <!--<Button x:Name="buttonSaveXML" Content="Eksport XML" Margin="2" Grid.Column="1" Grid.Row="0" Command="{Binding Path=ExportData}"/>-->
-                                <Button x:Name="buttonSaveCSV" Content="Eksport danych do pliku" Margin="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Command="{Binding Path=ExportData}"/>
-                                <Separator Grid.ColumnSpan="3" Grid.Row="1" />
-                                <Label x:Name="labelAutomaticSaveDataFolder" Grid.ColumnSpan="3" Grid.Row="2" HorizontalAlignment="Left" Content="Folder automatycznego zapisu danych:" VerticalAlignment="Top"/>
-                                <TextBlock x:Name="textBlockAutomaticSaveDataFolderPath" Margin="2" Grid.ColumnSpan="2" Grid.Row="3" HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding AutomaticSaveDataFolderPath}" VerticalAlignment="Top"/>
-                                <Button x:Name="buttonChangeAutomaticSaveDataFolderPath" Content="Zmień" Margin="2" Grid.Column="2" Grid.Row="4" IsEnabled="{Binding CanEditConnectionSetting}" Command="{Binding Path=ChangeAutomaticSaveDataFolderPath}"/>
                                 
                             </Grid>
                       </StackPanel>

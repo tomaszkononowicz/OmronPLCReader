@@ -28,6 +28,7 @@ namespace OmronPLCTemperatureReader.Views
 
         }
 
+
         ///
         /// TODO: Lista co poprawić po ukończeniu prjektu
         /// Zrzucanie do pliku danych

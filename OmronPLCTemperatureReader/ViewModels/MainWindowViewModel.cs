@@ -161,7 +161,6 @@ namespace OmronPLCTemperatureReader.ViewModels
             }
         }
 
-        public string AutomaticSaveDataFolderPath { get; set; }
 
         private Serie selectedItem;
         public Serie SelectedItem
@@ -248,8 +247,6 @@ namespace OmronPLCTemperatureReader.ViewModels
         public RelayCommand ChartYRangeSet { get; set; }
         public RelayCommand ChartShow { get; set; }
         public RelayCommand ChartMoveToEnd { get; set; }
-        public RelayCommand ExportData { get; set; }
-        public RelayCommand ChangeAutomaticSaveDataFolderPath { get; set; }
         public RelayCommand ImportSeries { get; set; }
         public RelayCommand ExportSeries { get; set; }
         public RelayCommand DeleteAllSeries { get; set; }
@@ -430,7 +427,6 @@ namespace OmronPLCTemperatureReader.ViewModels
                     now.Hour,
                     now.Minute,
                     now.Second);
-                    serie.add(now, _value, AutomaticSaveDataFolderPath, ChartTitle);
                 }
             }
             try
@@ -509,8 +505,6 @@ namespace OmronPLCTemperatureReader.ViewModels
                 catch { }
                 try { Interval = int.Parse(settingsRoot.SelectSingleNode("Interval").InnerText); }
                 catch { }
-                try { AutomaticSaveDataFolderPath = settingsRoot.SelectSingleNode("AutomaticSaveDataFolderPath").InnerText; }
-                catch { }
                 try {
                     string defaultSeriesFilePath = settingsRoot.SelectSingleNode("DefaultSeriesFilePath").InnerText;
                     Series = new ObservableCollection<Serie>();
@@ -535,7 +529,6 @@ namespace OmronPLCTemperatureReader.ViewModels
             if (Port == default(ushort)) Port = 9600;
             //Ip = IPAddress.Parse("192.168.1.130");
             if (Ip == default(IPAddress)) Ip = IPAddress.Parse("194.187.238.5");
-            if (AutomaticSaveDataFolderPath == default(string) || !Directory.Exists(AutomaticSaveDataFolderPath)) AutomaticSaveDataFolderPath = AppDomain.CurrentDomain.BaseDirectory;
             if (Interval == default(int)) Interval = 1;
             if (Series == default(ObservableCollection<Serie>)) Series = new ObservableCollection<Serie>();
 
@@ -558,8 +551,6 @@ namespace OmronPLCTemperatureReader.ViewModels
             ChartYRangeSet = new RelayCommand(ChartYRangeSetAction, CanChartYRangeSet);
             ChartShow = new RelayCommand(ChartShowAction, CanAlwaysTrue);
             ChartMoveToEnd = new RelayCommand(ChartMoveToEndAction, CanChartMoveToEnd);
-            ExportData = new RelayCommand(ExportDataAction, CanAlwaysTrue);
-            ChangeAutomaticSaveDataFolderPath = new RelayCommand(ChangeAutomaticSaveDataFolderPathAction, CanAlwaysTrue);
             ImportSeries = new RelayCommand(ImportSeriesAction, CanAlwaysTrue);
             ExportSeries = new RelayCommand(ExportSeriesAction, CanAlwaysTrue);
             DeleteAllSeries = new RelayCommand(DeleteAllSeriesAction, CanAlwaysTrue);
@@ -673,55 +664,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             }
         }
 
-        private void ChangeAutomaticSaveDataFolderPathAction(object obj)
-        {
-            var folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-            var result = folderBrowserDialog.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
-            {
-                AutomaticSaveDataFolderPath = folderBrowserDialog.SelectedPath;
-                OnPropertyChanged("AutomaticSaveDataFolderPath");
-            }
-        }
-
-        private void ExportDataAction(object obj)
-        {
-            var saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            saveFileDialog.Filter = "Txt file (*.txt)|*.txt";
-            var result = saveFileDialog.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
-            {
-                string path = Path.GetFullPath(saveFileDialog.FileName);
-                if (!ExportDataTxt(path)) MessageBox.Show("Nie udało się wyeksportować danych", "Eksport", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private bool ExportDataTxt(string path)
-        {
-            try
-            {
-                FileStream fs = new FileStream(path, FileMode.Create);
-                lock (Series)
-                {
-                    for (int i=0; i<Series.Count; i++)
-                    {
-                        lock (Series[i].Data)
-                        {
-                            for (int j=0; j<Series[i].Data.Count; j++)
-                            {
-                                byte[] recordToSave = Encoding.ASCII.GetBytes(Series[i].Data[j].Key.ToString("yyyy.MM.dd H:mm:ss") + "\t" + Series[i].Name + "\t" + Series[i].Data[j].Value + "\r\n");
-                                fs.Write(recordToSave, 0, recordToSave.Length);
-                            }
-                        }
-                    }
-                }                              
-                fs.Close();
-                return true;
-            }
-            catch { return false; }
-        }
-
-
+      
             
         
 
