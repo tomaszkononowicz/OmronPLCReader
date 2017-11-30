@@ -6,34 +6,127 @@ using System.Threading.Tasks;
 using mcOMRON;
 using System.Net;
 using System.Windows;
+using OmronPLCTemperatureReader.Common;
+using System.Timers;
 
 namespace OmronPLCTemperatureReader.Models
 {
     public class Plc
     {
         Random random = new Random();
-        OmronPLC plc;
+        OmronPLC omronPlc;
         mcOMRON.tcpFINSCommand tcpCommand;
+        public event EventHandler<ConnectionStatusEnum> ConnectionStatusChanged;
 
-        public bool Connected
-        {
-            get { return plc == null ? false : plc.Connected; }
-        }
-
-       public Plc()
-        {
-            plc = new OmronPLC(mcOMRON.TransportType.Tcp);
-            tcpCommand = ((mcOMRON.tcpFINSCommand)plc.FinsCommand);
-        }
-
-        public bool connect(IPAddress ip, ushort port)
-        {
-            tcpCommand.SetTCPParams(ip, port);
-            if (!plc.Connect())
-            {
-                MessageBox.Show(plc.LastError);
-                return false;       
+        private ConnectionStatusEnum connectionStatus;
+        public ConnectionStatusEnum ConnectionStatus {
+            get { return connectionStatus; }
+            private set {
+                connectionStatus = value;
+                if (ConnectionStatusChanged != null)
+                {
+                    ConnectionStatusChanged.Invoke(this, value);
+                }
             }
+        }
+        public bool AutoReconnectAfterConnectionLost { get; set; }
+        private const int autoReconnectAfterConnectionLostMax = 0;
+        public int AutoReconnectAfterConnectionLostMax { get { return autoReconnectAfterConnectionLostMax; } }
+        public int AutoReconnectAfterConnectionLostCounter { get; set; }
+        private IPAddress ip;
+        private ushort port;
+        Timer connectionMonitor;
+        int licznik = 0;
+        object lockerOnlyOneFrameSendInTheSameTime = new object();
+
+        public Plc()
+        {
+            omronPlc = new OmronPLC(mcOMRON.TransportType.Tcp);
+            tcpCommand = ((mcOMRON.tcpFINSCommand)omronPlc.FinsCommand);
+            connectionMonitor = new Timer();
+            connectionMonitor.Elapsed += ConnectionMonitor_Elapsed; ;
+            connectionMonitor.Interval = 2000;
+            connectionMonitor.Enabled = false;
+            ConnectionStatus = ConnectionStatusEnum.DISCONNECTED;
+            AutoReconnectAfterConnectionLost = true;
+            AutoReconnectAfterConnectionLostCounter = 0;
+            
+        }
+
+        private void ConnectionMonitor_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            if (ConnectionStatus != ConnectionStatusEnum.DISCONNECTED)
+            {
+                if (ConnectionStatus == ConnectionStatusEnum.CONNECTED)
+                {
+                    lock (lockerOnlyOneFrameSendInTheSameTime)
+                    {
+                        if (!omronPlc.finsConnectionDataRead(0))
+                        {
+                            //Console.WriteLine(omronPlc.LastError);
+                            //Console.WriteLine(ConnectionStatusEnum.CONNECTION_LOST);
+                            ConnectionStatus = ConnectionStatusEnum.CONNECTION_LOST;
+                        }
+                    }
+                }
+                if (ConnectionStatus == ConnectionStatusEnum.CONNECTION_LOST ||
+                    ConnectionStatus == ConnectionStatusEnum.RECONNECTING)
+                {
+
+                    if (AutoReconnectAfterConnectionLost &&
+                        ConnectionStatus != ConnectionStatusEnum.CONNECTED &&
+                        ConnectionStatus != ConnectionStatusEnum.CONNECTING &&
+                        (AutoReconnectAfterConnectionLostCounter < AutoReconnectAfterConnectionLostMax || AutoReconnectAfterConnectionLostMax == 0))
+                    {
+                        connect(ip, port, true);
+                    }
+                    else
+                    {
+                        ConnectionStatus = ConnectionStatusEnum.DISCONNECTED;
+                        //Console.WriteLine(ConnectionStatusEnum.DISCONNECTED);
+                    }
+                }
+            }
+        }
+
+        public bool connect(IPAddress ip, ushort port, bool reconnect = false)
+        {
+            try
+            {
+                omronPlc.Close();
+            }
+            catch { }
+            omronPlc = new OmronPLC(mcOMRON.TransportType.Tcp);
+            tcpCommand = ((mcOMRON.tcpFINSCommand)omronPlc.FinsCommand);
+            this.ip = ip;
+            this.port = port;
+            if (reconnect)
+            {
+                ConnectionStatus = ConnectionStatusEnum.RECONNECTING;
+                Console.WriteLine(ConnectionStatusEnum.RECONNECTING);
+                AutoReconnectAfterConnectionLostCounter++;
+            }
+            else ConnectionStatus = ConnectionStatusEnum.CONNECTING;
+            tcpCommand.SetTCPParams(ip, port);
+            if (!omronPlc.Connect())
+            {
+                if (ConnectionStatus != ConnectionStatusEnum.DISCONNECTED &&
+                    ConnectionStatus != ConnectionStatusEnum.RECONNECTING)
+                {
+                    ConnectionStatus = ConnectionStatusEnum.CONNECTION_FAILED;
+                    MessageBox.Show(omronPlc.LastError);
+                    connectionMonitor.Enabled = false;
+                }
+                try
+                {
+                    omronPlc.Close();
+                }
+                catch { }
+                return false;
+            }
+            ConnectionStatus = ConnectionStatusEnum.CONNECTED;
+            AutoReconnectAfterConnectionLostCounter = 0;
+            connectionMonitor.Enabled = true;
             return true;
         }
 
@@ -41,24 +134,38 @@ namespace OmronPLCTemperatureReader.Models
         {
             try
             {
-                plc.Close();
-            } catch
+                ConnectionStatus = ConnectionStatusEnum.DISCONNECTED;
+                connectionMonitor.Enabled = false;
+                omronPlc.Close();      
+            }
+            catch
             {
                 return false;
             }
             return true;
         }
 
+
+
         public int? getValue(ushort dm)
         {
-            short result = 0;
-            if (plc.ReadDM(dm, ref result))
+            lock (lockerOnlyOneFrameSendInTheSameTime)
             {
-                return result;
-            }
-            else
-            {
-                return null;
+                try
+                {
+                    omronPlc.Close();
+                }
+                catch { };
+                if (omronPlc.Connect()) {
+                    //return random.Next(65535);
+                    short result = 0;
+                    if (omronPlc.finsConnectionDataRead(0))
+                    {
+                        if (omronPlc.ReadDM(dm, ref result)) return result;
+                    }
+                    
+                }
+                return 0;
             }
         }
     }

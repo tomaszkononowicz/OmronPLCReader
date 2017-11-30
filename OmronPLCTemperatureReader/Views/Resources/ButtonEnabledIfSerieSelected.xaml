@@ -1,0 +1,15 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:OmronPLCTemperatureReader.Views.Resources">
+    <Style x:Key="ButtonEnabledIfSerieSelected" TargetType="{x:Type Button}">
+        <Setter Property="IsEnabled" Value="true" />
+        <Style.Triggers>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=SelectedItem, ElementName=dataGridSeries}" Value="{x:Null}" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="IsEnabled" Value="false" />
+            </MultiDataTrigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

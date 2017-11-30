@@ -24,8 +24,8 @@ namespace OmronPLCTemperatureReader.Views
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();    
-               
+            DataContext = new MainWindowViewModel();
+
         }
 
         ///
@@ -34,11 +34,25 @@ namespace OmronPLCTemperatureReader.Views
         /// Normalne uruchamianie nowego okna
         /// Ile może być maks DMów (65535?)
         /// Tooltipy np przy mnożniku
-        /// 
+        /// W propercjach jeżeli private nie potrzebne to usunac
+        /// VuewModelBase Iproperty rpzerzucić do modelu
+        /// DM konfiguracyjny np sprawdzający licencję
+        /// Usuwanie gdy za dużo 
+
+        /// 83.12.23.58 - Suwałki
         /// 194.187.238.5
         /// Port 9600
-        /// DM 2068
-        ///
+        /// DM 2068 216
+        /// 2368 222
+        /// 191112
+        /// wpis godzina wartosc seria></wpis>
+        /*
+
+        będzie można otworzyć wiele plików
+        Pokaże się się nazwa Serii i ile wpisów ma dana seria początek i koniec i będzie można scalić
+            Przeskanowanie całego pliku i na podstawie
+
+        Zapisywanie przeglądania z opcją utworzenia nowego pliku lub odtworzenia akcji z tamtego pliku*/
 
 
     }

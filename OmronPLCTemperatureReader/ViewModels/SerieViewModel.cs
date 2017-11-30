@@ -1,7 +1,7 @@
 ﻿using OmronPLCTemperatureReader.Commands;
 using OmronPLCTemperatureReader.Models;
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -15,8 +15,8 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         #region UI properties
 
-        public ObservableCollection<KeyValuePair<string, double>> Multiplication { get; set; }
-        public KeyValuePair<string, double> MultiplicationSelectedItem { get; set; }
+        public ObservableCollection<KeyValuePair<string, double>> Multipliers { get; set; }
+        public KeyValuePair<string, double> MultiplierSelectedItem { get; set; }
 
         private string name;
         public string Name
@@ -68,7 +68,7 @@ namespace OmronPLCTemperatureReader.ViewModels
         {
             Serie.Name = name;
             Serie.Dm = dm;
-            Serie.Multiplication = MultiplicationSelectedItem.Value;
+            Serie.Multiplier = MultiplierSelectedItem.Value;
             Window window = obj as Window;
             window.DialogResult = true;
             window.Close();
@@ -85,7 +85,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             Serie = serie;
             Name = serie.Name;
             Dm = serie.Dm;
-            Multiplication = new ObservableCollection<KeyValuePair<string, double>>()
+            Multipliers = new ObservableCollection<KeyValuePair<string, double>>()
             {
                 new KeyValuePair<string, double>("1000", 1000),
                 new KeyValuePair<string, double>("100", 100),
@@ -97,11 +97,11 @@ namespace OmronPLCTemperatureReader.ViewModels
             };
             try
             {
-                double multiplication = serie.Multiplication;
-                MultiplicationSelectedItem = Multiplication.Where(x => x.Value.Equals(multiplication)).First();
+                double multiplication = serie.Multiplier;
+                MultiplierSelectedItem = Multipliers.Where(x => x.Value.Equals(multiplication)).First();
             } catch
             {
-                MultiplicationSelectedItem = new KeyValuePair<string, double>("1 (Brak mnożnika)", 1);
+                MultiplierSelectedItem = new KeyValuePair<string, double>("1 (Brak mnożnika)", 1);
             }
             Save = new RelayCommand(SaveAction, CanSave);
             Cancel = new RelayCommand(CancelAction, CanCancel);

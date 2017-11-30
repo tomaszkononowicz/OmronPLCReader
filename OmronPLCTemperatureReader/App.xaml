@@ -7,6 +7,11 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Views/Resources/TextBoxError.xaml"/>
+                <ResourceDictionary Source="Views/Resources/ExpanderRotateArrowUpCenter.xaml"/>
+                <ResourceDictionary Source="Views/Resources/DataGridTextColumnStrikethrough.xaml"/>
+                <ResourceDictionary Source="Views/Resources/ButtonEnabledIfSerieSelected.xaml"/>
+                <ResourceDictionary Source="Views/Resources/ButtonEnabledIfSerieExist.xaml"/>
+                <ResourceDictionary Source="Views/Resources/ScrollBarVerticalWithoutArrows.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

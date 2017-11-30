@@ -15,7 +15,7 @@
             <TextBox.Text>
                 <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
-                        <rule:TextValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" MaxLength="28" ErrorMessage="Nazwa serii zbyt długa (maksymalnie 28 znaków)"/>
+                        <rule:TextValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue"/>
                     </Binding.ValidationRules>
                 </Binding>
             </TextBox.Text>
@@ -30,7 +30,7 @@
             </TextBox.Text>
         </TextBox>
         <Label x:Name="labelMultiplication" Content="Mnożnik danych" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="comboBoxMultiplication" Margin="112,70,10,0" VerticalAlignment="Top" Height="26" IsReadOnly="True" ItemsSource="{Binding Multiplication}" DisplayMemberPath="Key" SelectedItem="{Binding MultiplicationSelectedItem}"/>
+        <ComboBox x:Name="comboBoxMultiplication" Margin="112,70,10,0" VerticalAlignment="Top" Height="26" IsReadOnly="True" ItemsSource="{Binding Multipliers}" DisplayMemberPath="Key" SelectedItem="{Binding MultiplierSelectedItem}"/>
         <Button x:Name="buttonSave" Content="Zapisz" Margin="10,0,0,10" Command="{Binding Save}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Left" Width="75" Height="20" VerticalAlignment="Bottom">
             <Button.Style>
                 <Style TargetType="Button">
