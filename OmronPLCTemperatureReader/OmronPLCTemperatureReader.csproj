@@ -17,7 +17,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <TargetFrameworkProfile />
     <PublishUrl>C:\Users\Tomasz\Desktop\OmronPLCReaderv0.8\</PublishUrl>
-    <Install>true</Install>
+    <Install>false</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
     <UpdateMode>Foreground</UpdateMode>
@@ -110,11 +110,17 @@
     <Compile Include="Models\KeyValuePair.cs" />
     <Compile Include="Models\Plc.cs" />
     <Compile Include="Models\Serie.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="ViewModels\ArchiveWindowViewModel.cs" />
     <Compile Include="ViewModels\SerieViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Page Include="Views\AddEditSerieWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ArchiveWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -126,6 +132,9 @@
     </Compile>
     <Compile Include="Views\AddEditSerieWindow.xaml.cs">
       <DependentUpon>AddEditSerieWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ArchiveWindow.xaml.cs">
+      <DependentUpon>ArchiveWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

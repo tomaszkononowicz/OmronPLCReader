@@ -27,7 +27,7 @@ using System.Xml.XPath;
 
 namespace OmronPLCTemperatureReader.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    public class ArchiveWindowViewModel : ViewModelBase
     {
         #region UI properties
 
@@ -519,7 +519,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             }
         }
 
-        public MainWindowViewModel()
+        public ArchiveWindowViewModel()
         {
             //Load settings from settings.xml
             //string settingsFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "settings.xml");
@@ -586,8 +586,8 @@ namespace OmronPLCTemperatureReader.ViewModels
             //Strzałka aby rozciągnąć Y na górę i dół na maksa
 
 
-            getValuesTimer.Interval = interval * 1000;
-            getValuesTimer.Enabled = true;
+            //getValuesTimer.Interval = interval * 1000;
+            //getValuesTimer.Enabled = true;
 
 
 

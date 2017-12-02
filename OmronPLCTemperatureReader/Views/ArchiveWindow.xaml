@@ -1,4 +1,4 @@
-﻿<Window x:Class="OmronPLCTemperatureReader.Views.MainWindow"
+﻿<Window x:Class="OmronPLCTemperatureReader.Views.ArchiveWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -71,7 +71,6 @@
                                     </Binding>
                                 </TextBox.Text>
                             </TextBox>
-                            <Label x:Name="labelInterval" Content="Czas próbkowania [s]" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Width="143"/>
                             <TextBox x:Name="textBoxInterval" Height="22" Margin="153,73,10,0" TextWrapping="Wrap" VerticalAlignment="Top"  IsEnabled="{Binding CanEditConnectionSetting}" Style="{StaticResource textBoxError}">
                                 <TextBox.Text>
                                     <Binding Path="Interval" UpdateSourceTrigger="PropertyChanged">
@@ -255,7 +254,7 @@
                                     <RowDefinition Height="1*"/>
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
-                                <Button x:Name="buttonNewMainWindow" Content="Otwórz" Margin="2" Grid.Column="0" Grid.Row="0" Command="{Binding Path=OpenArchive}"/>
+                                <Button x:Name="buttonNewArchiveWindow" Content="Otwórz" Margin="2" Grid.Column="0" Grid.Row="0" Command="{Binding Path=OpenArchive}"/>
                                 
                             </Grid>
                       </StackPanel>

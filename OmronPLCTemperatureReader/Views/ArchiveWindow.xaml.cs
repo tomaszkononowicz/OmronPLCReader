@@ -17,14 +17,14 @@ using System.Windows.Shapes;
 namespace OmronPLCTemperatureReader.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for ArchiveWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ArchiveWindow : Window
     {     
-        public MainWindow()
+        public ArchiveWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
+            DataContext = new ArchiveWindowViewModel();
 
         }
 
@@ -47,7 +47,6 @@ namespace OmronPLCTemperatureReader.Views
         /// 2368 222
         /// 191112
         /// wpis godzina wartosc seria></wpis>
-        /// https://www.codeproject.com/Tips/443588/Simple-Csharp-FTP-Class
         /*
 
         będzie można otworzyć wiele plików

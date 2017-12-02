@@ -53,6 +53,37 @@ namespace OmronPLCTemperatureReader.Models
             
         }
 
+
+        private bool tryAndConnect()
+        {
+            Func<bool> testDataRead = (() =>
+            {
+                try { if (omronPlc.finsConnectionDataRead(0)) return true; }
+                catch (Exception e) { return false; }
+                return false;
+            });
+            Func<bool> testNewConnect = (() =>
+            {
+                try
+                {
+                    omronPlc = new OmronPLC(mcOMRON.TransportType.Tcp);
+                    tcpCommand = ((mcOMRON.tcpFINSCommand)omronPlc.FinsCommand);
+                    tcpCommand.SetTCPParams(ip, port);
+                    if (omronPlc.Connect()) {
+                        //omronPlc.Close();
+                        return true;
+                    }                   
+                }
+                catch (Exception e) { return false; }
+                return false;
+            });
+            if (testDataRead()) return true;
+            else if (testNewConnect()) return true;
+            return false;
+
+        }
+
+
         private void ConnectionMonitor_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (ConnectionStatus != ConnectionStatusEnum.DISCONNECTED)
@@ -61,7 +92,7 @@ namespace OmronPLCTemperatureReader.Models
                 {
                     lock (lockerOnlyOneFrameSendInTheSameTime)
                     {
-                        if (!omronPlc.finsConnectionDataRead(0))
+                        if (!tryAndConnect())
                         {
                             //Console.WriteLine(omronPlc.LastError);
                             //Console.WriteLine(ConnectionStatusEnum.CONNECTION_LOST);
@@ -96,8 +127,6 @@ namespace OmronPLCTemperatureReader.Models
                 omronPlc.Close();
             }
             catch { }
-            omronPlc = new OmronPLC(mcOMRON.TransportType.Tcp);
-            tcpCommand = ((mcOMRON.tcpFINSCommand)omronPlc.FinsCommand);
             this.ip = ip;
             this.port = port;
             if (reconnect)
@@ -108,7 +137,7 @@ namespace OmronPLCTemperatureReader.Models
             }
             else ConnectionStatus = ConnectionStatusEnum.CONNECTING;
             tcpCommand.SetTCPParams(ip, port);
-            if (!omronPlc.Connect())
+            if (!tryAndConnect())
             {
                 if (ConnectionStatus != ConnectionStatusEnum.DISCONNECTED &&
                     ConnectionStatus != ConnectionStatusEnum.RECONNECTING)
@@ -117,11 +146,6 @@ namespace OmronPLCTemperatureReader.Models
                     MessageBox.Show(omronPlc.LastError);
                     connectionMonitor.Enabled = false;
                 }
-                try
-                {
-                    omronPlc.Close();
-                }
-                catch { }
                 return false;
             }
             ConnectionStatus = ConnectionStatusEnum.CONNECTED;
