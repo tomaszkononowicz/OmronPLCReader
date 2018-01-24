@@ -27,29 +27,12 @@
             </ScrollViewer.Resources>
 
             <StackPanel x:Name="stackPanelSettings" Margin="10,10,5,10" VerticalAlignment="Top" Grid.Column="0" >
-                <GroupBox x:Name="groupBoxConnection" Header="Połączenie" Height="auto">
-                    <Expander x:Name="expanderConnection" VerticalAlignment="Top" IsExpanded="True" Template="{StaticResource ResourceKey=ExpanderRotateArrowUpCenter}">
+                <GroupBox x:Name="groupBoxConnection" Header="Połączenie FTP" Height="auto">
+                    <Expander x:Name="expanderConnection" VerticalAlignment="Top" IsExpanded="True" Template="{StaticResource ResourceKey=ExpanderRotateArrowUpCenter}" Height="300">
                         <Grid>
                             <Label x:Name="labelIP" Content="IP" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="28"/>
                             <Label x:Name="labelPort" Content="Port" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="44"/>
-                            <Label x:Name="connectionStatus" Content="{Binding ConnectionStatus}" HorizontalAlignment="Left" Margin="75,101,0,0" VerticalAlignment="Top" Width="153" Height="27"/>
-                            <Button x:Name="connectDisconnect" Content="{Binding ButtonConnectDisconnectContent}" HorizontalAlignment="Left" Margin="10,104,0,0" VerticalAlignment="Top" Width="60" Command="{Binding Path=ConnectDisconect}" Height="22">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="IsEnabled" Value="false" />
-                                        <Style.Triggers>
-                                            <MultiDataTrigger>
-                                                <Setter Property="IsEnabled" Value="true" />
-                                                <MultiDataTrigger.Conditions>
-                                                    <Condition Binding="{Binding ElementName=textBoxIP, Path=(Validation.HasError)}" Value="false" />
-                                                    <Condition Binding="{Binding ElementName=textBoxPort, Path=(Validation.HasError)}" Value="false" />
-                                                    <Condition Binding="{Binding ElementName=textBoxInterval, Path=(Validation.HasError)}" Value="false" />
-                                                </MultiDataTrigger.Conditions>
-                                            </MultiDataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
+                            <Label x:Name="connectionStatus" Content="{Binding ConnectionStatus}" Margin="10,120,50,0" VerticalAlignment="Top" Height="27"/>
                             <TextBox x:Name="textBoxIP" Height="22" Margin="62,14,10,0" TextWrapping="Wrap" VerticalAlignment="Top" IsEnabled="{Binding CanEditConnectionSetting}" Style="{StaticResource textBoxError}">
                                 <TextBox.Text>
                                     <Binding Path="Ip" UpdateSourceTrigger="PropertyChanged">
@@ -71,16 +54,24 @@
                                     </Binding>
                                 </TextBox.Text>
                             </TextBox>
-                            <TextBox x:Name="textBoxInterval" Height="22" Margin="153,73,10,0" TextWrapping="Wrap" VerticalAlignment="Top"  IsEnabled="{Binding CanEditConnectionSetting}" Style="{StaticResource textBoxError}">
-                                <TextBox.Text>
-                                    <Binding Path="Interval" UpdateSourceTrigger="PropertyChanged">
-                                        <Binding.ValidationRules>
-                                            <rule:IntegerValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" MinValue="1" MaxValue="600" ErrorMessage="Wartość powinna być z przedziału od 1 do 600"/>
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
+                            <Label x:Name="labelLogin" Content="Login" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Width="44"/>
+                            <TextBox x:Name="textBoxLogin" Height="22" Margin="62,69,10,0" TextWrapping="Wrap" VerticalAlignment="Top" IsEnabled="{Binding CanEditConnectionSetting}" Style="{StaticResource textBoxError}">
+                                <Binding Path="Login" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <rule:TextValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" CanBeEmpty="False"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
                             </TextBox>
-                            <!--Accepts tabs Accepts returns-->
+                            <Label x:Name="labelPassword" Content="Hasło" HorizontalAlignment="Left" Margin="10,92,0,0" VerticalAlignment="Top" Width="44"/>
+                            <TextBox x:Name="textBoxPassword" Height="22" Margin="62,96,10,0" TextWrapping="Wrap" VerticalAlignment="Top" IsEnabled="{Binding CanEditConnectionSetting}" Style="{StaticResource textBoxError}">
+                                <Binding Path="Password" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <rule:TextValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" CanBeEmpty="False"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox>
+                            <Label x:Name="connectionStatus_Copy" Content="{Binding ConnectionStatus}" Margin="192,120,10,0" VerticalAlignment="Top" Height="27"/>
+                            <!--Accepts tabs Accepts return Możliwość przechodzedzenia Tabami i wciskania Enter? TODO-->
                         </Grid>
                     </Expander>
                 </GroupBox>
@@ -239,25 +230,22 @@
 
 
                 </GroupBox>
-                <GroupBox x:Name="groupBoxArchive" Header="Archiwum" Height="auto">
+                <GroupBox x:Name="groupBoxArchive" Header="Archiwum - dodaj dane" Height="auto">
                     <Expander x:Name="expanderArchive" VerticalAlignment="Top" IsExpanded="True" Template="{StaticResource ResourceKey=ExpanderRotateArrowUpCenter}">
                         <StackPanel>
                             <Grid Margin="5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="1*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
                                     <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
-                                <Button x:Name="buttonNewArchiveWindow" Content="Otwórz" Margin="2" Grid.Column="0" Grid.Row="0" Command="{Binding Path=OpenArchive}"/>
-                                
+                                <Button x:Name="buttonBrowseFTP" Content="Przeglądaj FTP" Margin="2" Grid.Column="0" Grid.Row="0" Command="{Binding Path=BrowseFTP}"/>
+                                <Button x:Name="buttonBrowseLocal" Content="Przeglądaj dysk" Margin="2" Grid.Column="1" Grid.Row="0" Command="{Binding Path=BrowseLocal}"/>
                             </Grid>
-                      </StackPanel>
+                        </StackPanel>
                     </Expander>
                 </GroupBox>
                 <GroupBox x:Name="groupBoxSeries" Header="Serie">

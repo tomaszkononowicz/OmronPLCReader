@@ -78,8 +78,8 @@ namespace OmronPLCTemperatureReader.ViewModels
 
    
         public string WindowTitle { get; set; }
-        public Serie Serie { get; set; }
-        public SerieViewModel(ref Serie serie)
+        public SerieOnline Serie { get; set; }
+        public SerieViewModel(ref SerieOnline serie)
         {
             WindowTitle = serie.Name;
             Serie = serie;

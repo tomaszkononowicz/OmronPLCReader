@@ -21,7 +21,7 @@ namespace OmronPLCTemperatureReader.Views
     /// </summary>
     public partial class AddEditSerieWindow : Window
     {
-        public AddEditSerieWindow(ref Serie serie)
+        public AddEditSerieWindow(ref SerieOnline serie)
         {
             InitializeComponent();
             DataContext = new SerieViewModel(ref serie);

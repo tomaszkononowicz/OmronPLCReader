@@ -15,8 +15,6 @@ namespace OmronPLCTemperatureReader.Models
     public class Serie : INotifyPropertyChanged
     {
         public string Name { get; set; }
-        [XmlIgnore]
-        public double LastValue { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -28,7 +26,6 @@ namespace OmronPLCTemperatureReader.Models
             get { return visibility; }
             set { visibility = value; OnPropertyChanged("Visibility"); }
         }
-        public ushort Dm { get; set; }
         private double multiplier;
         public double Multiplier
         {
@@ -41,7 +38,6 @@ namespace OmronPLCTemperatureReader.Models
                         data.Value = data.Value / multiplier * value;
                     }
                 }
-                LastValue = LastValue / multiplier * value;
                 multiplier = value;
             }
         }
@@ -54,34 +50,34 @@ namespace OmronPLCTemperatureReader.Models
             Visibility = true;
 
         }
-        public Serie(string name, ushort dm, double multiplier = 1)
+        public Serie(string name, double multiplier = 1)
         {
             this.multiplier = multiplier;
             
             Data = new ObservableCollection<KeyValuePair<DateTime, double>>();
             Name = name;
             Visibility = true;
-            Dm = dm;
             Multiplier = multiplier;
         }
 
-        public void add(DateTime dateTime, int value, string directory, string fileNamePrefix)
+        public void add(DateTime dateTime, int value)
         {
-            LastValue = value * Multiplier;
+            double _value = value * Multiplier;
             lock (Data)
             {               
-                Data.Add(new KeyValuePair<DateTime, double>(dateTime, LastValue));
-                if (directory != null)
-                {
-                    try
-                    {
-                        FileStream fs = new FileStream(Path.Combine(directory, (fileNamePrefix == null || fileNamePrefix == "") ? fileNamePrefix + "_" : "" + dateTime.ToString("yyyy.MM.dd") + ".xml"), FileMode.Append);
-                        byte[] recordToSave = Encoding.ASCII.GetBytes(dateTime.ToString("yyyy.MM.dd H:mm:ss") + "\t" + Name + "\t" + LastValue + "\t" + Multiplier + "\r\n");
-                        fs.Write(recordToSave, 0, recordToSave.Length);
-                        fs.Close();
-                    }
-                    catch { /*Console.WriteLine("Automatyczny zapis nieudany");*/ }
-                }
+                Data.Add(new KeyValuePair<DateTime, double>(dateTime, _value));     
+            }
+        }
+
+        public void saveToFile(DateTime dateTime, int value, string directory, string fileNamePrefix)
+        {
+
+            double _value = value * Multiplier;
+            {
+                FileStream fs = new FileStream(Path.Combine(directory, (fileNamePrefix == null || fileNamePrefix == "") ? fileNamePrefix + "_" : "" + dateTime.ToString("yyyy.MM.dd") + ".xml"), FileMode.Append);
+                byte[] recordToSave = Encoding.ASCII.GetBytes(dateTime.ToString("yyyy.MM.dd H:mm:ss") + "\t" + Name + "\t" + _value + "\t" + Multiplier + "\r\n");
+                fs.Write(recordToSave, 0, recordToSave.Length);
+                fs.Close();
             }
         }
 

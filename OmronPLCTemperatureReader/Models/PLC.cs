@@ -69,7 +69,7 @@ namespace OmronPLCTemperatureReader.Models
                     omronPlc = new OmronPLC(mcOMRON.TransportType.Tcp);
                     tcpCommand = ((mcOMRON.tcpFINSCommand)omronPlc.FinsCommand);
                     tcpCommand.SetTCPParams(ip, port);
-                    if (omronPlc.Connect()) {
+                    if (omronPlc.Connect()) { //why exception
                         //omronPlc.Close();
                         return true;
                     }                   
@@ -180,16 +180,13 @@ namespace OmronPLCTemperatureReader.Models
                     omronPlc.Close();
                 }
                 catch { };
-                if (omronPlc.Connect()) {
-                    //return random.Next(65535);
-                    short result = 0;
-                    if (omronPlc.finsConnectionDataRead(0))
-                    {
-                        if (omronPlc.ReadDM(dm, ref result)) return result;
+                short result = 0;
+                if (tryAndConnect()) {
+                    omronPlc.ReadDM(dm, ref result);
+                    if (tryAndConnect()) return result;
                     }
-                    
-                }
                 return 0;
+
             }
         }
     }

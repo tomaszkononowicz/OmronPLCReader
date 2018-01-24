@@ -162,8 +162,8 @@ namespace OmronPLCTemperatureReader.ViewModels
         }
 
 
-        private Serie selectedItem;
-        public Serie SelectedItem
+        private SerieOnline selectedItem;
+        public SerieOnline SelectedItem
         {
             get { return selectedItem; }
             set
@@ -341,7 +341,7 @@ namespace OmronPLCTemperatureReader.ViewModels
                         plot.Axes[0].Reset();
                         Plot.InvalidatePlot(false);
                         getValuesTimer.Interval = interval * 1000;
-                        //getValuesTimer.Enabled = true;
+                        getValuesTimer.Enabled = true;
                     }
                 }), connectCancellationTokenSource.Token);
             }
@@ -349,7 +349,7 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private void AddSerieAction(object obj)
         {
-            Serie newSerie = new Serie("Nowa seria", 0);
+            SerieOnline newSerie = new SerieOnline("Nowa seria", 0);
             Nullable<bool> dialogResult = new AddEditSerieWindow(ref newSerie).ShowDialog();
             if (dialogResult == true)
             {
@@ -362,7 +362,7 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private void HideShowSerieAction(object obj)
         {
-            Serie selectedItem = obj as Serie;
+            SerieOnline selectedItem = obj as SerieOnline;
             if (selectedItem != null)
             {               
                 selectedItem.Visibility = !selectedItem.Visibility;
@@ -375,7 +375,7 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private void EditSerieAction(object obj)
         {
-            Serie selectedItem = obj as Serie;
+            SerieOnline selectedItem = obj as SerieOnline;
             if (selectedItem != null)
             {
                 new AddEditSerieWindow(ref selectedItem).ShowDialog();
@@ -388,7 +388,7 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private void DeleteSerieAction(object obj)
         {
-            Serie selectedItem = obj as Serie;
+            SerieOnline selectedItem = obj as SerieOnline;
             if (selectedItem != null)
             {
                 if (MessageBox.Show("Usunąć serię " + selectedItem.Name + "?", "Potwierdzenie", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == (MessageBoxResult.Yes))
@@ -414,7 +414,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             for (int i = 0; i < Series.Count; i++)
             {
 
-                Serie serie = Series[i];
+                SerieOnline serie = Series[i];
                 int? value = plc.getValue(serie.Dm);
                 if (value != null)
                 {
@@ -427,6 +427,7 @@ namespace OmronPLCTemperatureReader.ViewModels
                     now.Hour,
                     now.Minute,
                     now.Second);
+                    serie.add(now, _value);
                 }
             }
             try
@@ -460,7 +461,7 @@ namespace OmronPLCTemperatureReader.ViewModels
                 //Dla każdej serii utwórzyć Lineseries i do tego lineseries 
                 for (int i = 0; i < Series.Count; i++)
                 {
-                    Serie s = Series[i];
+                    SerieOnline s = Series[i];
                     LineSeries lineSeries = new LineSeries();
                     lineSeries.Title = s.Name;
                     lineSeries.IsVisible = s.Visibility;
@@ -481,7 +482,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             }
         }
 
-        public ObservableCollection<Serie> Series { get; set; }
+        public ObservableCollection<SerieOnline> Series { get; set; }
         public int DataCounter { get; set; }
 
         private Plc plc = new Plc();
@@ -507,7 +508,7 @@ namespace OmronPLCTemperatureReader.ViewModels
                 catch { }
                 try {
                     string defaultSeriesFilePath = settingsRoot.SelectSingleNode("DefaultSeriesFilePath").InnerText;
-                    Series = new ObservableCollection<Serie>();
+                    Series = new ObservableCollection<SerieOnline>();
                     ImportSeriesXML(defaultSeriesFilePath);
                 }
                 catch { }
@@ -528,9 +529,9 @@ namespace OmronPLCTemperatureReader.ViewModels
             //As default in properties region
             if (Port == default(ushort)) Port = 9600;
             //Ip = IPAddress.Parse("192.168.1.130");
-            if (Ip == default(IPAddress)) Ip = IPAddress.Parse("194.187.238.5");
+            if (Ip == default(IPAddress)) Ip = IPAddress.Parse("192.168.1.51"); //194.187.238.5
             if (Interval == default(int)) Interval = 1;
-            if (Series == default(ObservableCollection<Serie>)) Series = new ObservableCollection<Serie>();
+            if (Series == default(ObservableCollection<SerieOnline>)) Series = new ObservableCollection<SerieOnline>();
 
 
             ChartDateXMin = DateTime.Now;
@@ -586,8 +587,8 @@ namespace OmronPLCTemperatureReader.ViewModels
             //Strzałka aby rozciągnąć Y na górę i dół na maksa
 
 
-            getValuesTimer.Interval = interval * 1000;
-            getValuesTimer.Enabled = true;
+            //getValuesTimer.Interval = interval * 1000;
+            //getValuesTimer.Enabled = true;
 
 
 
@@ -642,9 +643,9 @@ namespace OmronPLCTemperatureReader.ViewModels
             {
                 System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(Series.GetType());
                 FileStream fs = new FileStream(path, FileMode.Open);
-                ObservableCollection<Serie> seriesRead = (ObservableCollection<Serie>)serializer.Deserialize(fs);
+                ObservableCollection<SerieOnline> seriesRead = (ObservableCollection<SerieOnline>)serializer.Deserialize(fs);
                 fs.Close();
-                foreach (Serie s in seriesRead) Series.Add(s);
+                foreach (SerieOnline s in seriesRead) Series.Add(s);
                 return true;
             }
             catch { return false; }

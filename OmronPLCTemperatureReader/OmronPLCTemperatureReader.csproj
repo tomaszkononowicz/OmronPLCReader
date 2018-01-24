@@ -107,9 +107,12 @@
     <Compile Include="Common\ValidationRules\DateValidation.cs" />
     <Compile Include="Common\ValidationRules\TextValidation.cs" />
     <Compile Include="Common\ValidationRules\IntegerValidation.cs" />
+    <Compile Include="Models\FTPClient.cs" />
     <Compile Include="Models\KeyValuePair.cs" />
     <Compile Include="Models\Plc.cs" />
     <Compile Include="Models\Serie.cs" />
+    <Compile Include="Models\SerieArchive.cs" />
+    <Compile Include="Models\SerieOnline.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\ArchiveWindowViewModel.cs" />
     <Compile Include="ViewModels\SerieViewModel.cs" />
