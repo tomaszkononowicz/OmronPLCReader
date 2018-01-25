@@ -242,6 +242,7 @@ namespace OmronPLCTemperatureReader.ViewModels
         public RelayCommand DeleteSerie { get; set; }
         public RelayCommand SortTableView { get; set; }
         public RelayCommand Copy { get; set; }
+        public RelayCommand Delete { get; set; }
         public RelayCommand ChartXDurationSet { get; set; }
         public RelayCommand ChartXRangeSet { get; set; }
         public RelayCommand ChartYRangeSet { get; set; }
@@ -269,17 +270,37 @@ namespace OmronPLCTemperatureReader.ViewModels
         private void CopyAction(object obj)
         {
             string copytext = "";
-            IEnumerable series = obj as IEnumerable;
-            foreach (var s in series) {
-                copytext += s.GetType().GetProperty("Date").GetValue(s, null).ToString() + "\t";
-                copytext += s.GetType().GetProperty("Serie").GetValue(s, null).ToString() + "\t";
-                copytext += s.GetType().GetProperty("Value").GetValue(s, null).ToString() + "\r\n";
+            IEnumerable items = obj as IEnumerable;
+            foreach (var i in items) { 
+                copytext += i.GetType().GetProperty("Date").GetValue(i, null).ToString() + "\t";
+                copytext += i.GetType().GetProperty("Serie").GetValue(i, null).ToString() + "\t";
+                copytext += i.GetType().GetProperty("Value").GetValue(i, null).ToString() + "\r\n";
                 Clipboard.SetText(copytext);
             }
 
 
             
             
+        }
+
+        private void DeleteAction(object obj)
+        {
+            IEnumerable items = obj as IEnumerable;
+            foreach (var i in items)
+            {
+                DateTime dateTime = DateTime.Parse(i.GetType().GetProperty("Date").GetValue(i, null).ToString());
+                int value = int.Parse(i.GetType().GetProperty("Value").GetValue(i, null).ToString());
+                foreach (Serie s in Series)
+                {
+                    s.delete(s.findByDateTimeAndValue(dateTime, value));
+                }
+            }
+            OnPropertyChanged("TableView");
+            Plot.InvalidatePlot(true);
+
+
+
+
         }
 
         private bool CanChartYRangeSet(object obj)
@@ -547,6 +568,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             DeleteSerie = new RelayCommand(DeleteSerieAction, CanAlwaysTrue);
             SortTableView = new RelayCommand(SortTableViewAction, CanAlwaysTrue);
             Copy = new RelayCommand(CopyAction, CanAlwaysTrue);
+            Delete = new RelayCommand(DeleteAction, CanAlwaysTrue);
             ChartXDurationSet = new RelayCommand(ChartXDurationSetAction, CanAlwaysTrue);
             ChartXRangeSet = new RelayCommand(ChartXRangeSetAction, CanChartXRangeSet);
             ChartYRangeSet = new RelayCommand(ChartYRangeSetAction, CanChartYRangeSet);

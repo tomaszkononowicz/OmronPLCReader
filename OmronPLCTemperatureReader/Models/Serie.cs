@@ -69,6 +69,29 @@ namespace OmronPLCTemperatureReader.Models
             }
         }
 
+        public void delete(KeyValuePair<DateTime, double> item)
+        {
+            lock (Data)
+            {
+                Data.Remove(item);
+            }
+        }
+
+        public void delete(List<KeyValuePair<DateTime, double>> itemList)
+        {
+            foreach (KeyValuePair<DateTime, double> item in itemList) delete(item);
+        }
+
+        public List<KeyValuePair<DateTime, double>> findByDateTimeAndValue(DateTime dateTime, int value)
+        {
+            List<KeyValuePair<DateTime, double>> result = new List<KeyValuePair<DateTime, double>>();
+            foreach (KeyValuePair<DateTime, double> item in Data)
+            {
+                if (item.Key.Equals(dateTime) && item.Value.Equals(value)) result.Add(item);
+            }
+            return result;
+        }
+
         public void saveToFile(DateTime dateTime, int value, string directory, string fileNamePrefix)
         {
 
@@ -85,5 +108,6 @@ namespace OmronPLCTemperatureReader.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
     }
 }

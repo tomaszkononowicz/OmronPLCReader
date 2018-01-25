@@ -357,6 +357,7 @@
                         <ListView.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Copy" Command="{Binding Copy}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems}"/>
+                                <MenuItem Header="Delete" Command="{Binding Delete}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems}"/>
                             </ContextMenu>
                         </ListView.ContextMenu>
 
