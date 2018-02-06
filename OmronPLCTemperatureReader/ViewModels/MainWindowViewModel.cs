@@ -9,6 +9,7 @@ using OxyPlot.Series;
 using System;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -331,6 +332,7 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private void ConnectDisconectAction(object obj)
         {
+            Debug.WriteLine(DateTime.Now + "ConnectDisconectAction");
             if (plc.ConnectionStatus == ConnectionStatusEnum.CONNECTING ||
                 plc.ConnectionStatus == ConnectionStatusEnum.RECONNECTING)
             {
@@ -340,10 +342,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             }
             else if (plc.ConnectionStatus == ConnectionStatusEnum.CONNECTED)
             {
-                if (plc.disconnect())
-                {
-                    getValuesTimer.Enabled = false;
-                }
+                plc.disconnect();
             }
             else if (plc.ConnectionStatus != ConnectionStatusEnum.CONNECTING && 
                      plc.ConnectionStatus != ConnectionStatusEnum.DISCONNECTING &&
@@ -351,19 +350,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             {
                 Task.Run(new Action(() =>
                 {
-                    if (plc.connect(ip, port))
-                    {
-                        //TODO
-                        //Czyszczenie serii?
-                        //If series != null, plot.Axes[0].Minimum = plot.Axes[0].DataMinimum?
-                        plot.ResetAllAxes();
-                        plot.Axes[0].Minimum = DateTimeAxis.ToDouble(DateTime.Now);
-                        plot.Axes[0].Maximum = DateTimeAxis.ToDouble(DateTime.Now.AddSeconds(interval*10));
-                        plot.Axes[0].Reset();
-                        Plot.InvalidatePlot(false);
-                        getValuesTimer.Interval = interval * 1000;
-                        getValuesTimer.Enabled = true;
-                    }
+                    plc.connect(ip, port);
                 }), connectCancellationTokenSource.Token);
             }
         }
@@ -429,39 +416,46 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private void GetValuesTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            OnPropertyChanged("ConnectionStatus");
-            OnPropertyChanged("ButtonConnectDisconnectContent");
-            OnPropertyChanged("CanEditConnectionSetting");
-            for (int i = 0; i < Series.Count; i++)
+            Debug.WriteLine(DateTime.Now + "GetValuesTimer_Elapsed");
+            if (plc.ConnectionStatus == ConnectionStatusEnum.CONNECTED)
             {
+                OnPropertyChanged("ConnectionStatus");
+                OnPropertyChanged("ButtonConnectDisconnectContent");
+                OnPropertyChanged("CanEditConnectionSetting");
 
-                SerieOnline serie = Series[i];
-                int? value = plc.getValue(serie.Dm);
-                if (value != null)
+                for (int i = 0; i < Series.Count; i++)
                 {
-                    int _value = (int)value;
-                    DateTime now = DateTime.Now;
-                    now = new DateTime(
-                    now.Year,
-                    now.Month,
-                    now.Day,
-                    now.Hour,
-                    now.Minute,
-                    now.Second);
-                    serie.add(now, _value);
-                }
-            }
-            try
-            {
-                Application.Current.Dispatcher.BeginInvoke(new Action(() => CollectionViewSource.GetDefaultView(Series).Refresh()));
-                ChartMove();
-                Plot.InvalidatePlot(true);
-            }
-            catch { }
 
-            if (SelectedItemTableView == null)
-            {
-                OnPropertyChanged("TableView");
+                    SerieOnline serie = Series[i];
+                    int? value = plc.getValue(serie.Dm);
+                    Debug.WriteLine("  " + DateTime.Now + " " + value);
+                    if (value != null)
+                    {
+                        
+                        int _value = (int)value;
+                        DateTime now = DateTime.Now;
+                        now = new DateTime(
+                        now.Year,
+                        now.Month,
+                        now.Day,
+                        now.Hour,
+                        now.Minute,
+                        now.Second);
+                        serie.add(now, _value);
+                    }
+                }
+                try
+                {
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() => CollectionViewSource.GetDefaultView(Series).Refresh()));
+                    ChartMove();
+                    Plot.InvalidatePlot(true);
+                }
+                catch { }
+
+                if (SelectedItemTableView == null)
+                {
+                    OnPropertyChanged("TableView");
+                }
             }
 
         }
@@ -513,6 +507,7 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private bool LoadSettings(string path)
         {
+            Debug.WriteLine(DateTime.Now + "LoadSettings");
             string loadSettingsLastError;
             try
             {
@@ -693,9 +688,26 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private void Plc_ConnectionStatusChanged(object sender, ConnectionStatusEnum e)
         {
+            Debug.WriteLine(DateTime.Now + " Plc_ConnectionStatusChanged " + e);
             OnPropertyChanged("ConnectionStatus");
             OnPropertyChanged("ButtonConnectDisconnectContent");
             OnPropertyChanged("CanEditConnectionSetting");
+            switch (e)
+            {
+                case ConnectionStatusEnum.CONNECTED:
+                    //TODO
+                    //Czyszczenie serii?
+                    //If series != null, plot.Axes[0].Minimum = plot.Axes[0].DataMinimum?
+                    ChartShowAction(null);
+                    Plot.InvalidatePlot(false);
+                    getValuesTimer.Interval = interval * 1000;
+                    getValuesTimer.Enabled = true;
+                    break;
+                default:
+                    getValuesTimer.Enabled = false;
+                    break;
+            }
+
         }
 
         private bool CanChartMoveToEnd(object obj)
@@ -732,6 +744,7 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private void ChartShowAction(object obj)
         {
+            Debug.WriteLine(DateTime.Now + " ChartShowAction");
             bool chartFlowMemory = ChartFlow;
             ChartFlow = false;
             OnPropertyChanged("ChartFlow");

@@ -42,6 +42,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -67,9 +69,6 @@
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
-    <Reference Include="mc.Omron.v1.00">
-      <HintPath>Libraries\mc.Omron.v1.00.dll</HintPath>
-    </Reference>
     <Reference Include="OxyPlot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
       <HintPath>..\packages\OxyPlot.Core.1.0.0\lib\net45\OxyPlot.dll</HintPath>
       <Private>True</Private>
@@ -107,6 +106,13 @@
     <Compile Include="Common\ValidationRules\DateValidation.cs" />
     <Compile Include="Common\ValidationRules\TextValidation.cs" />
     <Compile Include="Common\ValidationRules\IntegerValidation.cs" />
+    <Compile Include="mcOmron\BytesTools.cs" />
+    <Compile Include="mcOmron\FINSCommands\IFinsCommand.cs" />
+    <Compile Include="mcOmron\TransportLayer\ITransport.cs" />
+    <Compile Include="mcOmron\OmronPLC.cs" />
+    <Compile Include="mcOmron\FINSCommands\tcpFinsCommand.cs" />
+    <Compile Include="mcOmron\TransportLayer\tcpTransport.cs" />
+    <Compile Include="mcOmron\TransportLayer\udpTransport.cs" />
     <Compile Include="Models\FTPClient.cs" />
     <Compile Include="Models\KeyValuePair.cs" />
     <Compile Include="Models\Plc.cs" />
@@ -212,9 +218,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <EmbeddedResource Include="Libraries\mc.Omron.v1.00.dll" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

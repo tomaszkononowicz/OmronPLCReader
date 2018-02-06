@@ -76,7 +76,7 @@
                                 <TextBox.Text>
                                     <Binding Path="Interval" UpdateSourceTrigger="PropertyChanged">
                                         <Binding.ValidationRules>
-                                            <rule:IntegerValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" MinValue="1" MaxValue="600" ErrorMessage="Wartość powinna być z przedziału od 1 do 600"/>
+                                            <rule:IntegerValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" MinValue="5" MaxValue="600" ErrorMessage="Wartość powinna być z przedziału od 5 do 600"/>
                                         </Binding.ValidationRules>
                                     </Binding>
                                 </TextBox.Text>
@@ -240,28 +240,51 @@
 
 
                 </GroupBox>
-                <GroupBox x:Name="groupBoxArchive" Header="Archiwum" Height="auto">
-                    <Expander x:Name="expanderArchive" VerticalAlignment="Top" IsExpanded="True" Template="{StaticResource ResourceKey=ExpanderRotateArrowUpCenter}">
+                <GroupBox x:Name="groupBoxArchive" Header="Serie archiwum" Height="auto">
                         <StackPanel>
-                            <Grid Margin="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
-                                </Grid.RowDefinitions>
-                                <Button x:Name="buttonNewMainWindow" Content="Otwórz" Margin="2" Grid.Column="0" Grid.Row="0" Command="{Binding Path=OpenArchive}"/>
-                                
-                            </Grid>
-                      </StackPanel>
-                    </Expander>
+                            
+<!--podbindowane całe series zamiast series online-->
+                        <DataGrid x:Name="dataGridSeriesArchive" ItemsSource="{Binding Series}" HeadersVisibility="Column" HorizontalContentAlignment="Stretch" AutoGenerateColumns="False" ColumnWidth="*" CanUserDeleteRows="False" CanUserResizeRows="False" SelectionMode="Single" IsReadOnly="True" Margin="5" SelectedItem="{Binding SelectedItem}">
+                            <DataGrid.InputBindings>
+                                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding Path=EditSerie}" CommandParameter="{Binding Path=SelectedItem}" />
+                            </DataGrid.InputBindings>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Nazwa" Binding="{Binding Path=Name}" ElementStyle="{StaticResource dataGridTextColumnStrikethrough}"/>
+                                <DataGridTextColumn Width="60" Header="Wartość" Binding="{Binding Path=LastValue}" ElementStyle="{StaticResource dataGridTextColumnStrikethrough}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                            </Grid.RowDefinitions>
+                            <Button x:Name="buttonNewMainWindow" Content="Otwórz" Margin="2" Grid.Column="0" Command="{Binding Path=OpenArchive}"/>
+                            <Button x:Name="buttonShowHideShowSerieArchive" Margin="2" Grid.Column="1" Command="{Binding Path=HideShowSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeries}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ResourceKey=ButtonEnabledIfSerieSelected}">
+                                        <Setter Property="Content" Value="Ukryj" />
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding Path=SelectedItem.Visibility, ElementName=dataGridSeries}" Value="False" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Content" Value="Pokaż" />
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button x:Name="buttonDeleteSerieArchive" Content="Usuń" Margin="2" Grid.Column="2" Command="{Binding Path=DeleteSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeries}"  Style="{StaticResource ResourceKey=ButtonEnabledIfSerieSelected}" />
+                            <Button x:Name="buttonDeleteAllArchive" Content="Wyczyść" Margin="2" Grid.Column="3" Command="{Binding Path=DeleteAllSeries}" Style="{StaticResource ResourceKey=ButtonEnabledIfSerieExist}" ToolTip="Zostaną usunięte wszystkie serie"/>
+                        </Grid>
+                    </StackPanel>
                 </GroupBox>
-                <GroupBox x:Name="groupBoxSeries" Header="Serie">
+                <GroupBox x:Name="groupBoxSeries" Header="Serie online">
                     <StackPanel >
                         <DataGrid x:Name="dataGridSeries" ItemsSource="{Binding Series}" HeadersVisibility="Column" HorizontalContentAlignment="Stretch" AutoGenerateColumns="False" ColumnWidth="*" CanUserDeleteRows="False" CanUserResizeRows="False" SelectionMode="Single" IsReadOnly="True" Margin="5" SelectedItem="{Binding SelectedItem}">
                             <DataGrid.InputBindings>
