@@ -90,7 +90,7 @@
                     <Expander x:Name="expander" VerticalAlignment="Top" IsExpanded="False" Template="{StaticResource ResourceKey=ExpanderRotateArrowUpCenter}">
                         <Grid x:Name="groupBoxPlotGrid" Margin="5" Height="auto" >
                             <Label x:Name="labelChartTitle" Content="Tytuł" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
-                            <TextBox x:Name="textBoxChartTitle" HorizontalAlignment="Left" Height="22" Margin="51,4,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Style="{StaticResource textBoxError}" IsEnabled="{Binding CanEditConnectionSetting}" ToolTip="Ustawia tytuł wykresu. Możliwe tylko, gdy program nie jest połączony.">
+                            <TextBox x:Name="textBoxChartTitle" HorizontalAlignment="Left" Height="22" Margin="51,4,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Style="{StaticResource textBoxError}" IsEnabled="True"  ToolTip="Ustawia tytuł wykresu.">
                                 <TextBox.Text>
                                     <Binding Path="ChartTitle" UpdateSourceTrigger="PropertyChanged">
                                         <Binding.ValidationRules>

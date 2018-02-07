@@ -49,7 +49,6 @@ namespace OmronPLCTemperatureReader.Models
             connectionMonitor.Interval = 2000;
             connectionMonitor.Enabled = false;
             ConnectionStatus = ConnectionStatusEnum.DISCONNECTED;
-            AutoReconnectAfterConnectionLost = true;
             AutoReconnectAfterConnectionLostCounter = 0;
             
         }
@@ -57,10 +56,10 @@ namespace OmronPLCTemperatureReader.Models
 
         private bool tryAndConnect()
         {
-            Debug.WriteLine(DateTime.Now + " tryAndConnect");
+            
             Func<bool> testDataRead = (() =>
             {
-                Debug.WriteLine("  " + DateTime.Now + " testDataRead");
+                
                 try {
                     if (omronPlc.finsConnectionDataRead(0))
                         return true;
@@ -70,7 +69,7 @@ namespace OmronPLCTemperatureReader.Models
             });
             Func<bool> testNewConnect = (() =>
             {
-                Debug.WriteLine("  " + DateTime.Now + " testNewConnect");
+                
                 try
                 {
                     omronPlc = new OmronPLC(mcOMRON.TransportType.Tcp);
@@ -93,7 +92,7 @@ namespace OmronPLCTemperatureReader.Models
 
         private void ConnectionMonitor_Elapsed(object sender, ElapsedEventArgs e)
         {
-            Debug.WriteLine(DateTime.Now + " ConnectionMonitor_Elapsed");
+            
             if (ConnectionStatus != ConnectionStatusEnum.DISCONNECTED)
             {
                 if (ConnectionStatus == ConnectionStatusEnum.CONNECTED)
@@ -111,26 +110,14 @@ namespace OmronPLCTemperatureReader.Models
                 if (ConnectionStatus == ConnectionStatusEnum.CONNECTION_LOST ||
                     ConnectionStatus == ConnectionStatusEnum.RECONNECTING)
                 {
-
-                    if (AutoReconnectAfterConnectionLost &&
-                        ConnectionStatus != ConnectionStatusEnum.CONNECTED &&
-                        ConnectionStatus != ConnectionStatusEnum.CONNECTING &&
-                        (AutoReconnectAfterConnectionLostCounter < AutoReconnectAfterConnectionLostMax || AutoReconnectAfterConnectionLostMax == 0))
-                    {
-                        connect(ip, port, true);
-                    }
-                    else
-                    {
-                        ConnectionStatus = ConnectionStatusEnum.DISCONNECTED;
-                        //Console.WriteLine(ConnectionStatusEnum.DISCONNECTED);
-                    }
+                    connect(ip, port, true);
                 }
             }
         }
 
         public bool connect(IPAddress ip, ushort port, bool reconnect = false)
         {
-            Debug.WriteLine(DateTime.Now + " connect");
+            
             try
             {
                 omronPlc.Close();
@@ -141,7 +128,6 @@ namespace OmronPLCTemperatureReader.Models
             if (reconnect)
             {
                 ConnectionStatus = ConnectionStatusEnum.RECONNECTING;
-                Console.WriteLine(ConnectionStatusEnum.RECONNECTING);
                 AutoReconnectAfterConnectionLostCounter++;
             }
             else ConnectionStatus = ConnectionStatusEnum.CONNECTING;
@@ -152,7 +138,6 @@ namespace OmronPLCTemperatureReader.Models
                     ConnectionStatus != ConnectionStatusEnum.RECONNECTING)
                 {
                     ConnectionStatus = ConnectionStatusEnum.CONNECTION_FAILED;
-                    //MessageBox.Show(omronPlc.LastError);
                     connectionMonitor.Enabled = false;
                 }
                 return false;
@@ -165,7 +150,7 @@ namespace OmronPLCTemperatureReader.Models
 
         public bool disconnect()
         {
-            Debug.WriteLine(DateTime.Now + " disconnect");
+            
             try
             {
                 ConnectionStatus = ConnectionStatusEnum.DISCONNECTED;
@@ -186,7 +171,7 @@ namespace OmronPLCTemperatureReader.Models
             
             lock (lockerOnlyOneFrameSendInTheSameTime)
             {
-                Debug.WriteLine(DateTime.Now + " getValue DM " + dm + " Zaczelo sie");
+                
                 try
                 {
                     omronPlc.Close();
@@ -199,14 +184,15 @@ namespace OmronPLCTemperatureReader.Models
                     omronPlc.ReadDM(dm, ref result);
                     if (tryAndConnect() && ConnectionStatus == ConnectionStatusEnum.CONNECTED)
                     {
-                        Debug.WriteLine(DateTime.Now + " getValue DM " + dm + " Skonczylo sie");
+                        
                         return result;
                     }
                     }
-                Debug.WriteLine(DateTime.Now + " getValue DM " + dm + " Skonczylo sie");
+            }
+            
                 return null;
 
-            }
+           
         }
     }
 }

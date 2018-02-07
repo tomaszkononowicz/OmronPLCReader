@@ -4,6 +4,7 @@ using OmronPLCTemperatureReader.Common.ValidationRules;
 using OmronPLCTemperatureReader.Models;
 using OmronPLCTemperatureReader.Views;
 using OxyPlot;
+using OxyPlot.Annotations;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using System;
@@ -59,25 +60,24 @@ namespace OmronPLCTemperatureReader.ViewModels
 
 
 
-        private string chartTitle;
+
         public string ChartTitle
         {
-            get { return chartTitle; }
+            get { return plot.Title; }
             set
             {
                 //Property over Plot.Title because when edit Title via Textbox will get exception => this property must return chartTitle, not Plot.Title
-                chartTitle = value;
-                plot.Title = chartTitle;
+                plot.Title = value;
                 Plot.InvalidatePlot(true);
             }
         }
 
         public bool ChartLegendIsVisible
         {
-            get { return Plot.IsLegendVisible; }
+            get { return plot.IsLegendVisible; }
             set
             {
-                Plot.IsLegendVisible = value;
+                plot.IsLegendVisible = value;
                 Plot.InvalidatePlot(true);
             }
         }
@@ -154,7 +154,7 @@ namespace OmronPLCTemperatureReader.ViewModels
                     case ConnectionStatusEnum.CONNECTING: return "Łączenie...";
                     case ConnectionStatusEnum.CONNECTION_FAILED: return "Połączenie nieudane";
                     case ConnectionStatusEnum.CONNECTION_LOST: return "Połączenie przerwane";
-                    case ConnectionStatusEnum.RECONNECTING: return "Ponowne łączenie... ";// + plc.AutoReconnectAfterConnectionLostCounter + "/" + plc.AutoReconnectAfterConnectionLostMax; 
+                    case ConnectionStatusEnum.RECONNECTING: return ("Ponowne łączenie... " + plc.AutoReconnectAfterConnectionLostCounter); //+ "/" + plc.AutoReconnectAfterConnectionLostMax; 
                     case ConnectionStatusEnum.DISCONNECTED: return "Rozłączony";
                     case ConnectionStatusEnum.DISCONNECTING: return "Rozłączanie...";
                     default: return "Rozłączony";
@@ -332,7 +332,7 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private void ConnectDisconectAction(object obj)
         {
-            Debug.WriteLine(DateTime.Now + "ConnectDisconectAction");
+            
             if (plc.ConnectionStatus == ConnectionStatusEnum.CONNECTING ||
                 plc.ConnectionStatus == ConnectionStatusEnum.RECONNECTING)
             {
@@ -414,9 +414,10 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         #region Timers elapsed
 
+        private bool prevReadDMOK = true;
         private void GetValuesTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            Debug.WriteLine(DateTime.Now + "GetValuesTimer_Elapsed");
+            
             if (plc.ConnectionStatus == ConnectionStatusEnum.CONNECTED)
             {
                 OnPropertyChanged("ConnectionStatus");
@@ -428,12 +429,11 @@ namespace OmronPLCTemperatureReader.ViewModels
 
                     SerieOnline serie = Series[i];
                     int? value = plc.getValue(serie.Dm);
-                    Debug.WriteLine("  " + DateTime.Now + " " + value);
+                    DateTime now = DateTime.Now;
                     if (value != null)
                     {
-                        
-                        int _value = (int)value;
-                        DateTime now = DateTime.Now;
+                        prevReadDMOK = true;
+                        int _value = (int)value;                     
                         now = new DateTime(
                         now.Year,
                         now.Month,
@@ -442,6 +442,23 @@ namespace OmronPLCTemperatureReader.ViewModels
                         now.Minute,
                         now.Second);
                         serie.add(now, _value);
+                    } else
+                    {
+                        if (prevReadDMOK)
+                        {
+                            RectangleAnnotation a = new RectangleAnnotation
+                            {
+                                MinimumX = DateTimeAxis.ToDouble(now),
+                                MaximumX = DateTimeAxis.ToDouble(now),
+                                Fill = OxyColor.FromAColor(80, OxyColors.Red)
+                            };
+                            ConnectionRefusedAreas.Add(a);
+                            plot.Annotations.Add(a);
+                        } else
+                        {
+                            ConnectionRefusedAreas.Last().MinimumX = DateTimeAxis.ToDouble(now);
+                        }
+                        prevReadDMOK = false;
                     }
                 }
                 try
@@ -498,6 +515,7 @@ namespace OmronPLCTemperatureReader.ViewModels
         }
 
         public ObservableCollection<SerieOnline> Series { get; set; }
+        public ObservableCollection<RectangleAnnotation> ConnectionRefusedAreas { get; set; }
         public int DataCounter { get; set; }
 
         private Plc plc = new Plc();
@@ -507,7 +525,7 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private bool LoadSettings(string path)
         {
-            Debug.WriteLine(DateTime.Now + "LoadSettings");
+            
             string loadSettingsLastError;
             try
             {
@@ -548,7 +566,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             if (Ip == default(IPAddress)) Ip = IPAddress.Parse("192.168.1.51"); //194.187.238.5
             if (Interval == default(int)) Interval = 1;
             if (Series == default(ObservableCollection<SerieOnline>)) Series = new ObservableCollection<SerieOnline>();
-
+            if (ConnectionRefusedAreas == default(ObservableCollection<RectangleAnnotation>)) ConnectionRefusedAreas = new ObservableCollection<RectangleAnnotation>();
 
             ChartDateXMin = DateTime.Now;
             ChartDateXMax = DateTime.Now;
@@ -586,9 +604,10 @@ namespace OmronPLCTemperatureReader.ViewModels
             plot = new PlotModel();
             
             DateTimeAxis dateTimeAxis = new DateTimeAxis {Position = AxisPosition.Bottom, StringFormat = "HH:mm:ss" };
-            dateTimeAxis.AxisChanged += DateTimeAxis_AxisChanged;
-            dateTimeAxis.MajorGridlineStyle = LineStyle.Solid;
             plot.Axes.Add(dateTimeAxis);
+            plot.Axes[0].AxisChanged += DateTimeAxis_AxisChanged;
+            plot.Axes[0].MajorGridlineStyle = LineStyle.Solid;
+            
             plot.Axes[0].Reset();
             plot.Axes[0].Minimum = DateTimeAxis.ToDouble(DateTime.Now);
             plot.Axes[0].Maximum = DateTimeAxis.ToDouble(DateTime.Now.AddSeconds(Interval*10));
@@ -600,6 +619,9 @@ namespace OmronPLCTemperatureReader.ViewModels
             plot.Axes.Add(valueAxis);
             valueAxis.Reset();
             valueAxis.MajorGridlineStyle = LineStyle.Solid;
+
+
+
             //TODO 
             //Strzałka aby rozciągnąć Y na górę i dół na maksa
 
@@ -688,7 +710,7 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private void Plc_ConnectionStatusChanged(object sender, ConnectionStatusEnum e)
         {
-            Debug.WriteLine(DateTime.Now + " Plc_ConnectionStatusChanged " + e);
+            
             OnPropertyChanged("ConnectionStatus");
             OnPropertyChanged("ButtonConnectDisconnectContent");
             OnPropertyChanged("CanEditConnectionSetting");
@@ -705,6 +727,22 @@ namespace OmronPLCTemperatureReader.ViewModels
                     break;
                 default:
                     getValuesTimer.Enabled = false;
+                    if (prevReadDMOK)
+                    {
+                        RectangleAnnotation a = new RectangleAnnotation
+                        {
+                            MinimumX = DateTimeAxis.ToDouble(DateTime.Now),
+                            MaximumX = DateTimeAxis.ToDouble(DateTime.Now),
+                            Fill = OxyColor.FromAColor(80, OxyColors.Red)
+                        };
+                        ConnectionRefusedAreas.Add(a);
+                        plot.Annotations.Add(a);
+                    }
+                    else
+                    {
+                        ConnectionRefusedAreas.Last().MinimumX = DateTimeAxis.ToDouble(DateTime.Now);
+                    }
+                    prevReadDMOK = false;
                     break;
             }
 
@@ -744,7 +782,7 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private void ChartShowAction(object obj)
         {
-            Debug.WriteLine(DateTime.Now + " ChartShowAction");
+            
             bool chartFlowMemory = ChartFlow;
             ChartFlow = false;
             OnPropertyChanged("ChartFlow");
