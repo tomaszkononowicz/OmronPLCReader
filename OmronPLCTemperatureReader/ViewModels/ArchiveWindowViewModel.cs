@@ -673,7 +673,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             
         
 
-        private void Plc_ConnectionStatusChanged(object sender, ConnectionStatusEnum e)
+        private void Plc_ConnectionStatusChanged(object sender, ConnectionStatusChangedArgs e)
         {
             OnPropertyChanged("ConnectionStatus");
             OnPropertyChanged("ButtonConnectDisconnectContent");

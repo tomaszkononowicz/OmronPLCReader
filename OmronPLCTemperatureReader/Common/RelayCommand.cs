@@ -20,6 +20,13 @@ namespace OmronPLCTemperatureReader.Commands
             this._canExecute = canExecute;      
         }
 
+        public RelayCommand(Action<object> execute, bool canExecute)
+        {
+            this._execute = execute;
+            this._canExecute = (object o) => { return canExecute; };
+
+        }
+
         public event EventHandler CanExecuteChanged
         {
             add { CommandManager.RequerySuggested += value; }

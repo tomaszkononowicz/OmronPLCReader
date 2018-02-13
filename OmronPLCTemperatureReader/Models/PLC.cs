@@ -17,16 +17,17 @@ namespace OmronPLCTemperatureReader.Models
         Random random = new Random();
         OmronPLC omronPlc;
         mcOMRON.tcpFINSCommand tcpCommand;
-        public event EventHandler<ConnectionStatusEnum> ConnectionStatusChanged;
+        public event EventHandler<ConnectionStatusChangedArgs> ConnectionStatusChanged;
 
         private ConnectionStatusEnum connectionStatus;
         public ConnectionStatusEnum ConnectionStatus {
             get { return connectionStatus; }
             private set {
+                ConnectionStatusEnum prev = connectionStatus;
                 connectionStatus = value;
                 if (ConnectionStatusChanged != null)
                 {
-                    ConnectionStatusChanged.Invoke(this, value);
+                    ConnectionStatusChanged.Invoke(this, new ConnectionStatusChangedArgs(prev, connectionStatus));
                 }
             }
         }
@@ -37,7 +38,6 @@ namespace OmronPLCTemperatureReader.Models
         private IPAddress ip;
         private ushort port;
         Timer connectionMonitor;
-        int licznik = 0;
         object lockerOnlyOneFrameSendInTheSameTime = new object();
 
         public Plc()
@@ -150,7 +150,7 @@ namespace OmronPLCTemperatureReader.Models
 
         public bool disconnect()
         {
-            
+            ConnectionStatus = ConnectionStatusEnum.DISCONNECTING;
             try
             {
                 ConnectionStatus = ConnectionStatusEnum.DISCONNECTED;

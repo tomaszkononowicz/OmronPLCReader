@@ -29,7 +29,7 @@
             <StackPanel x:Name="stackPanelSettings" Margin="10,10,5,10" VerticalAlignment="Top" Grid.Column="0" >
                 <GroupBox x:Name="groupBoxConnection" Header="Połączenie" Height="auto">
                     <Expander x:Name="expanderConnection" VerticalAlignment="Top" IsExpanded="True" Template="{StaticResource ResourceKey=ExpanderRotateArrowUpCenter}">
-                        <Grid>
+                        <Grid DataContext="{Binding ConnectionViewModel}">
                             <Label x:Name="labelIP" Content="IP" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="28"/>
                             <Label x:Name="labelPort" Content="Port" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="44"/>
                             <Label x:Name="connectionStatus" Content="{Binding ConnectionStatus}" HorizontalAlignment="Left" Margin="75,101,0,0" VerticalAlignment="Top" Width="153" Height="27"/>
@@ -85,7 +85,7 @@
                         </Grid>
                     </Expander>
                 </GroupBox>
-                <GroupBox x:Name="groupBoxPlot" Header="Ustawienia wykresu" Height="auto">
+                <GroupBox x:Name="groupBoxPlot" Header="Ustawienia wykresu" Height="auto" DataContext="{Binding PlotViewModel}">
                     <!--<Button x:Name="button" Content="^" Margin="110,0,110,-12" Height="20" VerticalAlignment="Bottom"/>-->
                     <Expander x:Name="expander" VerticalAlignment="Top" IsExpanded="False" Template="{StaticResource ResourceKey=ExpanderRotateArrowUpCenter}">
                         <Grid x:Name="groupBoxPlotGrid" Margin="5" Height="auto" >
@@ -350,7 +350,7 @@
         </ScrollViewer>
         <GridSplitter Width="3" HorizontalAlignment="Stretch" Grid.Column="1" />
         <TabControl x:Name="tabControl" Margin="5,10,10,10" TabStripPlacement="Bottom" Grid.Column="2" IsManipulationEnabled="True">
-            <TabItem Header="Wykres">
+            <TabItem Header="Wykres" DataContext="{Binding PlotViewModel}">
                 <Grid Background="#FFE5E5E5">
                     <oxy:PlotView Model="{Binding Plot}">
 

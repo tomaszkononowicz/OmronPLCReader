@@ -113,6 +113,7 @@
     <Compile Include="mcOmron\FINSCommands\tcpFinsCommand.cs" />
     <Compile Include="mcOmron\TransportLayer\tcpTransport.cs" />
     <Compile Include="mcOmron\TransportLayer\udpTransport.cs" />
+    <Compile Include="Models\ConnectionStatusChangedArgs.cs" />
     <Compile Include="Models\FTPClient.cs" />
     <Compile Include="Models\KeyValuePair.cs" />
     <Compile Include="Models\Plc.cs" />
@@ -121,7 +122,11 @@
     <Compile Include="Models\SerieOnline.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\ArchiveWindowViewModel.cs" />
+    <Compile Include="ViewModels\ConnectionViewModel.cs" />
+    <Compile Include="ViewModels\PlotViewModel.cs" />
+    <Compile Include="ViewModels\SeriesDataGridViewModel.cs" />
     <Compile Include="ViewModels\SerieViewModel.cs" />
+    <Compile Include="ViewModels\TableViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Page Include="Views\AddEditSerieWindow.xaml">
       <SubType>Designer</SubType>
