@@ -74,9 +74,10 @@ namespace OmronPLCTemperatureReader.ViewModels
             window.Close();
         }
 
+
         #endregion
 
-   
+
         public string WindowTitle { get; set; }
         public SerieOnline Serie { get; set; }
         public SerieViewModel(ref SerieOnline serie)

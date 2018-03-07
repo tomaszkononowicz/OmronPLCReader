@@ -20,7 +20,7 @@ namespace OmronPLCTemperatureReader.Commands
             this._canExecute = canExecute;      
         }
 
-        public RelayCommand(Action<object> execute, bool canExecute)
+        public RelayCommand(Action<object> execute, bool canExecute=true)
         {
             this._execute = execute;
             this._canExecute = (object o) => { return canExecute; };

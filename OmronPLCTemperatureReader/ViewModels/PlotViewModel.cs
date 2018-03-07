@@ -33,6 +33,8 @@ namespace OmronPLCTemperatureReader.ViewModels
                     LineSeries lineSeries = new LineSeries();
                     lineSeries.Title = s.Name;
                     lineSeries.IsVisible = s.Visibility;
+                    lineSeries.MarkerType = MarkerType.Diamond;
+                    lineSeries.MarkerSize = 2;
                     foreach (Models.KeyValuePair<DateTime, double> pair in s.Data) //TODO Modyfikacja kolekcji!!
                     {
                         lineSeries.Points.Add(DateTimeAxis.CreateDataPoint(pair.Key, pair.Value));
@@ -181,12 +183,9 @@ namespace OmronPLCTemperatureReader.ViewModels
         }
 
 
+        //TODO dorobić ciągłe rysowanie jak jest łączenie
         public void ConnectionStatusChanged(object sender, ConnectionStatusChangedArgs e)
         {
-
-            OnPropertyChanged("ConnectionStatus");
-            OnPropertyChanged("ButtonConnectDisconnectContent");
-            OnPropertyChanged("CanEditConnectionSetting");
             DateTime now = DateTime.Now;
             switch (e.Actual)
             {
@@ -298,7 +297,9 @@ namespace OmronPLCTemperatureReader.ViewModels
         }
 
         private double? lastXAxisDataMaximum;
-        private void ChartMove()
+
+        
+        public void ChartMove()
         {
             try
             {
@@ -330,9 +331,8 @@ namespace OmronPLCTemperatureReader.ViewModels
                 lastXAxisDataMaximum = plot.Axes[0].DataMaximum;
             }
             catch { }
-            Plot.InvalidatePlot(true);
+            Refresh();
 
         }
-
     }
 }

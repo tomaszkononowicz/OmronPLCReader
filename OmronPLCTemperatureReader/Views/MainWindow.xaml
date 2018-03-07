@@ -240,10 +240,14 @@
 
 
                 </GroupBox>
+                
+                
                 <GroupBox x:Name="groupBoxArchive" Header="Serie archiwum" Height="auto">
                         <StackPanel>
                             
-<!--podbindowane całe series zamiast series online-->
+
+                <!--podbindowane całe series zamiast series online-->
+                
                         <DataGrid x:Name="dataGridSeriesArchive" ItemsSource="{Binding Series}" HeadersVisibility="Column" HorizontalContentAlignment="Stretch" AutoGenerateColumns="False" ColumnWidth="*" CanUserDeleteRows="False" CanUserResizeRows="False" SelectionMode="Single" IsReadOnly="True" Margin="5" SelectedItem="{Binding SelectedItem}">
                             <DataGrid.InputBindings>
                                 <MouseBinding Gesture="LeftDoubleClick" Command="{Binding Path=EditSerie}" CommandParameter="{Binding Path=SelectedItem}" />
@@ -370,7 +374,7 @@
 
                 </Grid>
             </TabItem>
-            <TabItem Header="Tabela">
+            <TabItem Header="Tabela" DataContext="{Binding TableViewModel}">
                 <Grid Background="#FFE5E5E5">
                     <ListView x:Name="listViewData" ItemsSource="{Binding TableView}">
                         <!--Copy feature-->
@@ -379,8 +383,8 @@
                         </ListView.InputBindings>
                         <ListView.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Copy" Command="{Binding Copy}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems}"/>
-                                <MenuItem Header="Delete" Command="{Binding Delete}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems}"/>
+                                <MenuItem Header="Kopiuj" Command="{Binding Copy}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems}" ToolTip="Kopiuje zaznaczone wiersze jako tekst"/>
+                                <MenuItem Header="Usuń" Command="{Binding Delete}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems}" ToolTip="Usuwa wartość pernamentnie - nie można jej przywrócić, usuwana jest także z wykresu"/>
                             </ContextMenu>
                         </ListView.ContextMenu>
 
@@ -403,5 +407,7 @@
                 </Grid>
             </TabItem>
         </TabControl>
+        <Label x:Name="labelVersion" Content="v 0.6.9" Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,10,3" VerticalAlignment="Bottom" Width="76" HorizontalContentAlignment="Right"/>
+
     </Grid>
 </Window>

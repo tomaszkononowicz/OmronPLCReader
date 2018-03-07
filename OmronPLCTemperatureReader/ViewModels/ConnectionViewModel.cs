@@ -23,7 +23,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             if (Port == default(ushort)) Port = 9600;
             //Ip = IPAddress.Parse("192.168.1.130");
             if (Ip == default(IPAddress)) Ip = IPAddress.Parse("192.168.1.51"); //194.187.238.5
-            if (Interval == default(int)) Interval = 1;
+            if (Interval == default(int)) Interval = 5;
             ConnectDisconect = new RelayCommand(ConnectDisconectAction, true);
             LoadConnectionSettings("settings.xml");
             OnPropertyChanged("Ip");
