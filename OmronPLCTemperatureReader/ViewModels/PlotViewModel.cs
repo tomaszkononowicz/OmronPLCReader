@@ -12,6 +12,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace OmronPLCTemperatureReader.ViewModels
 {
@@ -20,7 +21,16 @@ namespace OmronPLCTemperatureReader.ViewModels
         private PlotModel plot;
         private ObservableCollection<Serie> series;
         private ObservableCollection<RectangleAnnotation> connectionRefusedAreas = new ObservableCollection<RectangleAnnotation>();
-
+        private Visibility visibility;
+        public Visibility Visibility
+        {
+            get { return visibility; }
+            set
+            {
+                visibility = value;
+                OnPropertyChanged("Visibility");
+            }
+        }
         public PlotModel Plot
         {
             get
@@ -85,7 +95,6 @@ namespace OmronPLCTemperatureReader.ViewModels
         public RelayCommand ChartShow { get; set; }
         public RelayCommand ChartMoveToEnd { get; set; }
 
-
         private bool CanChartYRangeSet(object obj)
         {
             if (ChartYMin >= ChartYMax) return false;
@@ -134,9 +143,9 @@ namespace OmronPLCTemperatureReader.ViewModels
         }
 
 
-        public PlotViewModel(PlotModel plot, ObservableCollection<Serie> series)
+        public PlotViewModel(ViewModelBase parentViewModel, PlotModel plot, ObservableCollection<Serie> series)
         {
-
+            this.ParentViewModel = parentViewModel;
             ChartDateXMin = DateTime.Now;
             ChartDateXMax = DateTime.Now;
             ChartXDurationSet = new RelayCommand(ChartXDurationSetAction, true);
@@ -241,7 +250,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             //Console.WriteLine("Oś się zmieniła " + e.ChangeType + " " + e.DeltaMaximum);
         }
 
-        private void ChartShowAction(object obj)
+        public void ChartShowAction(object obj)
         {
 
             bool chartFlowMemory = ChartFlow;

@@ -289,7 +289,7 @@
                             <Button x:Name="buttonAddSerie" Content="Dodaj" Margin="2" Grid.Column="0" Command="{Binding Path=AddSerie}"/>
                             <Button x:Name="buttonShowHideShowSerie" Margin="2" Grid.Column="1" Command="{Binding Path=HideShowSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeries}">
                                 <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource ResourceKey=ButtonEnabledIfSerieSelected}">
+                                    <Style TargetType="Button" BasedOn="{StaticResource ResourceKey=ButtonEnabledIfSerieOnlineSelected}">
                                         <Setter Property="Content" Value="Ukryj" />
                                         <Style.Triggers>
                                             <MultiDataTrigger>
@@ -302,8 +302,8 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
-                            <Button x:Name="buttonEditSerie" Content="Edytuj" Margin="2" Grid.Column="2" Command="{Binding Path=EditSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeries}"  Style="{StaticResource ResourceKey=ButtonEnabledIfSerieSelected}"/>
-                            <Button x:Name="buttonDeleteSerie" Content="Usuń" Margin="2" Grid.Column="3" Command="{Binding Path=DeleteSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeries}"  Style="{StaticResource ResourceKey=ButtonEnabledIfSerieSelected}" />
+                            <Button x:Name="buttonEditSerie" Content="Edytuj" Margin="2" Grid.Column="2" Command="{Binding Path=EditSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeries}"  Style="{StaticResource ResourceKey=ButtonEnabledIfSerieOnlineSelected}"/>
+                            <Button x:Name="buttonDeleteSerie" Content="Usuń" Margin="2" Grid.Column="3" Command="{Binding Path=DeleteSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeries}"  Style="{StaticResource ResourceKey=ButtonEnabledIfSerieOnlineSelected}" />
                             <Button x:Name="buttonImportSeries" Content="Importuj" Margin="2" Grid.Column="0" Grid.Row="1" Command="{Binding Path=ImportSeries}" ToolTip="Zostaną zaimportowane tylko ustawienia serii, nie ich wartości"/>
                             <Button x:Name="buttonExportSeries" Content="Eksportuj" Margin="2" Grid.Column="1" Grid.Row="1" Command="{Binding Path=ExportSeries}" Style="{StaticResource ResourceKey=ButtonEnabledIfSerieExist}" ToolTip="Zostaną wyeksportowane tylko ustawienia serii, nie ich wartości"/>
                             <Button x:Name="buttonDeleteAll" Content="Wyczyść" Margin="2" Grid.Column="3" Grid.Row="1" Command="{Binding Path=DeleteAllSeries}" Style="{StaticResource ResourceKey=ButtonEnabledIfSerieExist}" ToolTip="Zostaną usunięte wszystkie serie"/>
@@ -365,6 +365,7 @@
                     </ListView>
                 </Grid>
             </TabItem>
+
         </TabControl>
     </Grid>
 </Window>

@@ -85,7 +85,7 @@
                         </Grid>
                     </Expander>
                 </GroupBox>
-                <GroupBox x:Name="groupBoxPlot" Header="Ustawienia wykresu" Height="auto" DataContext="{Binding PlotViewModel}">
+                <GroupBox x:Name="groupBoxPlot" Header="Ustawienia wykresu" Height="auto" DataContext="{Binding PlotViewModel}" Visibility="{Binding Visibility}">
                     <!--<Button x:Name="button" Content="^" Margin="110,0,110,-12" Height="20" VerticalAlignment="Bottom"/>-->
                     <Expander x:Name="expander" VerticalAlignment="Top" IsExpanded="False" Template="{StaticResource ResourceKey=ExpanderRotateArrowUpCenter}">
                         <Grid x:Name="groupBoxPlotGrid" Margin="5" Height="auto" >
@@ -99,10 +99,10 @@
                                     </Binding>
                                 </TextBox.Text>
                             </TextBox>
-                            <CheckBox x:Name="checkBoxChartLegendIsVisible" IsChecked="{Binding ChartLegendIsVisible}" Content="Legenda" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top"/>
-                            <CheckBox x:Name="checkBoxChartFlow" IsChecked="{Binding ChartFlow}" Content="Przesuwaj automatycznie" HorizontalAlignment="Left" Margin="10,55,0,0" VerticalAlignment="Top"/>
-                            <CheckBox x:Name="checkBoxChartFlowOnEdge" IsChecked="{Binding ChartFlowOnEdge}" Content="Tylko na krawędzi" HorizontalAlignment="Left" Margin="30,75,0,0" VerticalAlignment="Top" IsEnabled="{Binding ElementName=checkBoxChartFlow, Path=IsChecked}"/>
-                            <CheckBox x:Name="checkBoxChartFlowMinLock" IsChecked="{Binding ChartFlowMinLock}" Content="Zablokuj wartość minimum" HorizontalAlignment="Left" Margin="30,95,0,0" VerticalAlignment="Top" IsEnabled="{Binding ElementName=checkBoxChartFlow, Path=IsChecked}"/>
+                            <CheckBox x:Name="checkBoxChartLegendIsVisible" IsChecked="{Binding ChartLegendIsVisible}" Content="Legenda" HorizontalAlignment="Left" Margin="15,35,0,0" VerticalAlignment="Top"/>
+                            <CheckBox x:Name="checkBoxChartFlow" IsChecked="{Binding ChartFlow}" Content="Przesuwaj automatycznie" HorizontalAlignment="Left" Margin="15,55,0,0" VerticalAlignment="Top"/>
+                            <CheckBox x:Name="checkBoxChartFlowOnEdge" IsChecked="{Binding ChartFlowOnEdge}" Content="Tylko na krawędzi" HorizontalAlignment="Left" Margin="35,75,0,0" VerticalAlignment="Top" IsEnabled="{Binding ElementName=checkBoxChartFlow, Path=IsChecked}"/>
+                            <CheckBox x:Name="checkBoxChartFlowMinLock" IsChecked="{Binding ChartFlowMinLock}" Content="Zablokuj wartość minimum" HorizontalAlignment="Left" Margin="35,95,0,0" VerticalAlignment="Top" IsEnabled="{Binding ElementName=checkBoxChartFlow, Path=IsChecked}"/>
                             <Label x:Name="labelChartXDuration" Content="Długość osi X [s]" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,115,0,0"/>
                             <Button x:Name="buttonChartXDurationSet"  Content="Ustaw" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding ChartXDurationSet}" Margin="0,119,10,0">
                                 <Button.Style>
@@ -153,7 +153,7 @@
                                             <converter:DateTimeConverter/>
                                         </Binding.Converter>
                                         <Binding.ValidationRules>
-                                            <rule:DateValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" Pattern="d.MM.yyyy H:m:s" PatternErrorMessage="d.mm.rrrr g:m:s"/>
+                                            <rule:DateValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" Pattern="d.MM.yyyy H:mm:ss" PatternErrorMessage="d.mm.rrrr g:mm:ss"/>
                                         </Binding.ValidationRules>
                                     </Binding>
                                 </TextBox.Text>
@@ -166,7 +166,7 @@
                                             <converter:DateTimeConverter/>
                                         </Binding.Converter>
                                         <Binding.ValidationRules>
-                                            <rule:DateValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" Pattern="d.MM.yyyy H:m:s" PatternErrorMessage="d.mm.rrrr g:m:s"/>
+                                            <rule:DateValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" Pattern="d.MM.yyyy H:mm:ss" PatternErrorMessage="d.mm.rrrr g:mm:ss"/>
                                         </Binding.ValidationRules>
                                     </Binding>
                                 </TextBox.Text>
@@ -240,55 +240,159 @@
 
 
                 </GroupBox>
-                
-                
-                <GroupBox x:Name="groupBoxArchive" Header="Serie archiwum" Height="auto">
-                        <StackPanel>
-                            
-
-                <!--podbindowane całe series zamiast series online-->
-                
-                        <DataGrid x:Name="dataGridSeriesArchive" ItemsSource="{Binding Series}" HeadersVisibility="Column" HorizontalContentAlignment="Stretch" AutoGenerateColumns="False" ColumnWidth="*" CanUserDeleteRows="False" CanUserResizeRows="False" SelectionMode="Single" IsReadOnly="True" Margin="5" SelectedItem="{Binding SelectedItem}">
-                            <DataGrid.InputBindings>
-                                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding Path=EditSerie}" CommandParameter="{Binding Path=SelectedItem}" />
-                            </DataGrid.InputBindings>
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Nazwa" Binding="{Binding Path=Name}" ElementStyle="{StaticResource dataGridTextColumnStrikethrough}"/>
-                                <DataGridTextColumn Width="60" Header="Wartość" Binding="{Binding Path=LastValue}" ElementStyle="{StaticResource dataGridTextColumnStrikethrough}"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                        <Grid Margin="5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="1*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="1*"/>
-                            </Grid.RowDefinitions>
-                            <Button x:Name="buttonNewMainWindow" Content="Otwórz" Margin="2" Grid.Column="0" Command="{Binding Path=OpenArchive}"/>
-                            <Button x:Name="buttonShowHideShowSerieArchive" Margin="2" Grid.Column="1" Command="{Binding Path=HideShowSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeries}">
+                <GroupBox x:Name="groupBoxPlotArchive" Header="Ustawienia wykresu (Archiwum)" Height="auto" DataContext="{Binding PlotArchiveViewModel}" Visibility="{Binding Visibility}">
+                    <!--<Button x:Name="button" Content="^" Margin="110,0,110,-12" Height="20" VerticalAlignment="Bottom"/>-->
+                    <Expander x:Name="expanderGroupBoxPlotArchive" VerticalAlignment="Top" IsExpanded="False" Template="{StaticResource ResourceKey=ExpanderRotateArrowUpCenter}">
+                        <Grid x:Name="groupBoxPlotGridArchive" Margin="5" Height="auto" >
+                            <Label x:Name="labelChartTitleArchive" Content="Tytuł" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
+                            <TextBox x:Name="textBoxChartTitleArchive" HorizontalAlignment="Left" Height="22" Margin="51,4,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Style="{StaticResource textBoxError}" IsEnabled="True"  ToolTip="Ustawia tytuł wykresu.">
+                                <TextBox.Text>
+                                    <Binding Path="ChartTitle" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <rule:TextValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" CanBeEmpty="True"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <CheckBox x:Name="checkBoxChartLegendIsVisibleArchive" IsChecked="{Binding ChartLegendIsVisible}" Content="Legenda" HorizontalAlignment="Left" Margin="15,35,0,0" VerticalAlignment="Top"/>
+                            <Label x:Name="labelChartXDurationArchive" Content="Długość osi X [s]" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,60,0,0"/>
+                            <Button x:Name="buttonChartXDurationSetArchive"  Content="Ustaw" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding ChartXDurationSet}" Margin="0,64,10,0">
                                 <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource ResourceKey=ButtonEnabledIfSerieSelected}">
-                                        <Setter Property="Content" Value="Ukryj" />
+                                    <Style TargetType="{x:Type Button}">
+                                        <Setter Property="IsEnabled" Value="false" />
                                         <Style.Triggers>
                                             <MultiDataTrigger>
                                                 <MultiDataTrigger.Conditions>
-                                                    <Condition Binding="{Binding Path=SelectedItem.Visibility, ElementName=dataGridSeries}" Value="False" />
+                                                    <Condition Binding="{Binding (Validation.HasError), ElementName=textBoxChartXDurationArchive}" Value="false" />
                                                 </MultiDataTrigger.Conditions>
-                                                <Setter Property="Content" Value="Pokaż" />
+                                                <Setter Property="IsEnabled" Value="true" />
                                             </MultiDataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
                             </Button>
-                            <Button x:Name="buttonDeleteSerieArchive" Content="Usuń" Margin="2" Grid.Column="2" Command="{Binding Path=DeleteSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeries}"  Style="{StaticResource ResourceKey=ButtonEnabledIfSerieSelected}" />
-                            <Button x:Name="buttonDeleteAllArchive" Content="Wyczyść" Margin="2" Grid.Column="3" Command="{Binding Path=DeleteAllSeries}" Style="{StaticResource ResourceKey=ButtonEnabledIfSerieExist}" ToolTip="Zostaną usunięte wszystkie serie"/>
+                            <TextBox x:Name="textBoxChartXDurationArchive" Height="22" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource textBoxError}" Margin="108,64,51,0">
+
+                                <Binding Path="ChartXDurationValue" UpdateSourceTrigger="PropertyChanged"  >
+                                    <Binding.ValidationRules>
+                                        <rule:IntegerValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" MinValue="1" MaxValue="86400" ErrorMessage="Wartość powinna być z przedziału od 1 do 86400"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox>
+                            <Label x:Name="labelChartXMinArchive" Content="Oś X Min:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,90,0,0"/>
+                            <Label x:Name="labelChartXMaxArchive" Content="Max:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="36,114,0,0"/>
+                            <Label x:Name="labelChartYMinArchive" Content="Oś Y Min:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,156,0,0"/>
+                            <TextBox x:Name="textBoxChartYMinArchive" Height="22" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource textBoxError}" Margin="71,160,105,0">
+                                <Binding Path="ChartYMin" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <rule:IntegerValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox>
+                            <Label x:Name="labelChartYMaxArchive" Content="Max:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="35,186,0,0"/>
+                            <TextBox x:Name="textBoxChartYMaxArchive" Height="22" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource textBoxError}" Margin="71,188,105,0">
+                                <Binding Path="ChartYMax" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <rule:IntegerValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox>
+
+                            <TextBox x:Name="textBoxChartXMinArchive" Height="22" Margin="71,92,51,0" TextWrapping="Wrap" VerticalAlignment="Top" VerticalContentAlignment="Center">
+                                <TextBox.Text>
+                                    <Binding ElementName="pickerChartXMinArchive" Path="SelectedDate"  UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.Converter>
+                                            <converter:DateTimeConverter/>
+                                        </Binding.Converter>
+                                        <Binding.ValidationRules>
+                                            <rule:DateValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" Pattern="d.MM.yyyy H:mm:ss" PatternErrorMessage="d.mm.rrrr g:mm:ss"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <DatePicker x:Name="pickerChartXMinArchive" Height="auto" VerticalAlignment="Top" FirstDayOfWeek="Monday" SelectedDate="{Binding ChartDateXMin, UpdateSourceTrigger=PropertyChanged}" Margin="0,91,13,0" BorderBrush="{x:Null}" Width="30" HorizontalAlignment="Right"/>
+                            <TextBox x:Name="textBoxChartXMaxArchive" Height="22" Margin="71,120,51,0" TextWrapping="Wrap" VerticalAlignment="Top">
+                                <TextBox.Text>
+                                    <Binding ElementName="pickerChartXMaxArchive" Path="SelectedDate"  UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.Converter>
+                                            <converter:DateTimeConverter/>
+                                        </Binding.Converter>
+                                        <Binding.ValidationRules>
+                                            <rule:DateValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" Pattern="d.MM.yyyy H:mm:ss" PatternErrorMessage="d.mm.rrrr g:mm:ss"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <DatePicker x:Name="pickerChartXMaxArchive" Height="auto" VerticalAlignment="Top" FirstDayOfWeek="Monday" SelectedDate="{Binding ChartDateXMax, UpdateSourceTrigger=PropertyChanged}" Margin="0,119,13,0" BorderBrush="{x:Null}" Width="30" HorizontalAlignment="Right"/>
+                            <Button x:Name="buttonChartShowArchive" Content="Pokaż cały wykres" VerticalAlignment="Top" Command="{Binding ChartShow}" Margin="10,222,10,0"/>
+                            <Button x:Name="buttonChartXRangeSetArchive"  Content="Ustaw" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding ChartXRangeSet}" Margin="0,146,10,0">
+                                <Button.Style>
+                                    <Style TargetType="{x:Type Button}">
+                                        <Setter Property="IsEnabled" Value="false" />
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding (Validation.HasError), ElementName=textBoxChartXMinArchive}" Value="false" />
+                                                    <Condition Binding="{Binding (Validation.HasError), ElementName=textBoxChartXMaxArchive}" Value="false" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="IsEnabled" Value="true" />
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button x:Name="buttonChartYRangeSetArchive"  Content="Ustaw" Margin="0,176,61,0" VerticalAlignment="Top" Command="{Binding ChartYRangeSet}" HorizontalAlignment="Right" Width="36">
+                                <Button.Style>
+                                    <Style TargetType="{x:Type Button}">
+                                        <Setter Property="IsEnabled" Value="false" />
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding (Validation.HasError), ElementName=textBoxChartYMinArchive}" Value="false" />
+                                                    <Condition Binding="{Binding (Validation.HasError), ElementName=textBoxChartYMaxArchive}" Value="false" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="IsEnabled" Value="true" />
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <!--<Label x:Name="labelDataCounter" Content="Liczba wyświetlanych danych" HorizontalAlignment="Left" Margin="10,302,0,0" VerticalAlignment="Top"/>
+                            <TextBlock x:Name="textBlockDataCounter" HorizontalAlignment="Left" Margin="173,307,0,0" TextWrapping="Wrap" Text="{Binding DataCounter}" VerticalAlignment="Top" Height="24" Width="43"/>-->
+                            <!--<DatePicker x:Name="pickerChartXMax" Height="auto" Margin="71,135,10,0" VerticalAlignment="Top" FirstDayOfWeek="Monday">
+                            <DatePicker.Resources>
+                                <Style TargetType="{x:Type DatePickerTextBox}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+                                                <TextBox Text="{Binding ChartDateXMax, RelativeSource={RelativeSource AncestorType={x:Type DatePicker}}, StringFormat=\{0:dd-MM-yyyy HH:mm:ss\}}"/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DatePicker.Resources>
+                        </DatePicker>-->
+                            <!--<Button x:Name="buttonChartShowWhole" Content="Pokaż cały wykres" Margin="10,250,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="118"/>-->
+
+
+
+
+                            <!--<Button x:Name="oddal" Content="oddal" Margin="152,-19,-148,23" Command="{Binding oddal}"/>
+                    <Button x:Name="sledz" Content="sledz" Margin="251,-21,-247,25"  Command="{Binding sledz}"/>
+                    <Button x:Name="przesun" Content="przesun" Margin="209,0,-205,4" Command="{Binding przesun}"/>-->
+                            <!--//Checkbox TextBox tytul, że jak ktos chce skopiować to może sobie wpisać
+                    //Checkbox Legenda
+                    //CHeckbox akutalizuj na biezaco (ze sie samo przesuwa)
+                    //Dlugosc osi x domyslnie 5 sekund (jezeli 0 to ma sie przesuwac o tyle o ile jest
+                    //Button pokaż cały wykres
+                    
+                    -->
                         </Grid>
-                    </StackPanel>
+                    </Expander>
+
+
                 </GroupBox>
-                <GroupBox x:Name="groupBoxSeries" Header="Serie online">
+                <GroupBox x:Name="groupBoxSeries" Header="Serie online"  DataContext="{Binding SeriesOnlineDataGridViewModel}" Visibility="{Binding Visibility}">
                     <StackPanel >
                         <DataGrid x:Name="dataGridSeries" ItemsSource="{Binding Series}" HeadersVisibility="Column" HorizontalContentAlignment="Stretch" AutoGenerateColumns="False" ColumnWidth="*" CanUserDeleteRows="False" CanUserResizeRows="False" SelectionMode="Single" IsReadOnly="True" Margin="5" SelectedItem="{Binding SelectedItem}">
                             <DataGrid.InputBindings>
@@ -325,11 +429,12 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="1*"/>
                                 <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
                             <Button x:Name="buttonAddSerie" Content="Dodaj" Margin="2" Grid.Column="0" Command="{Binding Path=AddSerie}"/>
                             <Button x:Name="buttonShowHideShowSerie" Margin="2" Grid.Column="1" Command="{Binding Path=HideShowSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeries}">
                                 <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource ResourceKey=ButtonEnabledIfSerieSelected}">
+                                    <Style TargetType="Button" BasedOn="{StaticResource ResourceKey=ButtonEnabledIfSerieOnlineSelected}">
                                         <Setter Property="Content" Value="Ukryj" />
                                         <Style.Triggers>
                                             <MultiDataTrigger>
@@ -342,18 +447,74 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
-                            <Button x:Name="buttonEditSerie" Content="Edytuj" Margin="2" Grid.Column="2" Command="{Binding Path=EditSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeries}"  Style="{StaticResource ResourceKey=ButtonEnabledIfSerieSelected}"/>
-                            <Button x:Name="buttonDeleteSerie" Content="Usuń" Margin="2" Grid.Column="3" Command="{Binding Path=DeleteSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeries}"  Style="{StaticResource ResourceKey=ButtonEnabledIfSerieSelected}" />
-                            <Button x:Name="buttonImportSeries" Content="Importuj" Margin="2" Grid.Column="0" Grid.Row="1" Command="{Binding Path=ImportSeries}" ToolTip="Zostaną zaimportowane tylko ustawienia serii, nie ich wartości"/>
-                            <Button x:Name="buttonExportSeries" Content="Eksportuj" Margin="2" Grid.Column="1" Grid.Row="1" Command="{Binding Path=ExportSeries}" Style="{StaticResource ResourceKey=ButtonEnabledIfSerieExist}" ToolTip="Zostaną wyeksportowane tylko ustawienia serii, nie ich wartości"/>
-                            <Button x:Name="buttonDeleteAll" Content="Wyczyść" Margin="2" Grid.Column="3" Grid.Row="1" Command="{Binding Path=DeleteAllSeries}" Style="{StaticResource ResourceKey=ButtonEnabledIfSerieExist}" ToolTip="Zostaną usunięte wszystkie serie"/>
+                            <Button x:Name="buttonEditSerie" Content="Edytuj" Margin="2" Grid.Column="2" Command="{Binding Path=EditSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeries}"  Style="{StaticResource ResourceKey=ButtonEnabledIfSerieOnlineSelected}"/>
+                            <Button x:Name="buttonDeleteSerie" Content="Usuń" Margin="2" Grid.Column="3" Command="{Binding Path=DeleteSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeries}"  Style="{StaticResource ResourceKey=ButtonEnabledIfSerieOnlineSelected}" />
+                            <Button x:Name="buttonImportSeries" Content="Importuj serie" Margin="2" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Command="{Binding Path=ImportSeries}" ToolTip="Zostaną zaimportowane tylko ustawienia serii, nie ich wartości" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                            <Button x:Name="buttonExportSeries" Content="Eksportuj serie" Margin="2" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Command="{Binding Path=ExportSeries}" Style="{StaticResource ResourceKey=ButtonEnabledIfSerieExist}" ToolTip="Zostaną wyeksportowane tylko ustawienia serii, nie ich wartości"/>
+                            <Button x:Name="buttonExportValues" Content="Eksportuj wartości" Margin="2" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" Command="{Binding Path=ExportValues}" Style="{StaticResource ResourceKey=ButtonEnabledIfSerieExist}" ToolTip="Zostaną wyeksportowane tylko wartości serii"/>
+                            <Button x:Name="buttonDeleteAll" Content="Wyczyść" Margin="2" Grid.Column="3" Grid.Row="1" Grid.RowSpan="1" Command="{Binding Path=DeleteAllSeries}" Style="{StaticResource ResourceKey=ButtonEnabledIfSerieExist}" ToolTip="Zostaną usunięte wszystkie serie"/>
                         </Grid>
                     </StackPanel>
                 </GroupBox>
+                <GroupBox x:Name="groupBoxSeriesArchive" Header="Serie archiwum" Height="auto" DataContext="{Binding SeriesArchiveDataGridViewModel}" Visibility="{Binding Visibility}">
+                    <StackPanel>
+
+
+                        <!--podbindowane całe series zamiast series online-->
+
+                        <DataGrid x:Name="dataGridSeriesArchive" ItemsSource="{Binding Series}" HeadersVisibility="Column" HorizontalContentAlignment="Stretch" AutoGenerateColumns="False" ColumnWidth="*" CanUserDeleteRows="False" CanUserResizeRows="False" SelectionMode="Single" IsReadOnly="True" Margin="5" SelectedItem="{Binding SelectedItem}">
+                            <DataGrid.InputBindings>
+                                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding Path=EditSerie}" CommandParameter="{Binding Path=SelectedItem}" />
+                            </DataGrid.InputBindings>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Nazwa" Binding="{Binding Path=Name}" ElementStyle="{StaticResource dataGridTextColumnStrikethrough}"/>
+                                <!--<DataGridTextColumn Width="60" Header="Wartość" Binding="{Binding Path=LastValue}" ElementStyle="{StaticResource dataGridTextColumnStrikethrough}"/>-->
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                            </Grid.RowDefinitions>
+                            <Button x:Name="buttonNewMainWindow" Content="Otwórz" Margin="2" Grid.Column="0" Command="{Binding Path=OpenArchive}"/>
+                            <Button x:Name="buttonShowHideShowSerieArchive" Margin="2" Grid.Column="1" Command="{Binding Path=HideShowSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeriesArchive}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ResourceKey=ButtonEnabledIfSerieArchiveSelected}">
+                                        <Setter Property="Content" Value="Ukryj" />
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding Path=SelectedItem.Visibility, ElementName=dataGridSeriesArchive}" Value="False" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Content" Value="Pokaż" />
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button x:Name="buttonDeleteSerieArchive" Content="Usuń" Margin="2" Grid.Column="2" Command="{Binding Path=DeleteSerie}" CommandParameter="{Binding Path=SelectedItem, ElementName=dataGridSeriesArchive}"  Style="{StaticResource ResourceKey=ButtonEnabledIfSerieArchiveSelected}" />
+                            <Button x:Name="buttonDeleteAllArchive" Content="Wyczyść" Margin="2" Grid.Column="3" Command="{Binding Path=DeleteAllSeries}" Style="{StaticResource ResourceKey=ButtonEnabledIfSerieExist}" ToolTip="Zostaną usunięte wszystkie serie"/>
+                            <Button x:Name="buttonAddFromFileArchive" Content="Dodaj" ToolTip="Przed importem serie archiwalne nie zostaną wyczyszczone" Margin="2" Grid.Column="0" Grid.Row="1" Command="{Binding Path=AddArchive}"/>
+                        </Grid>
+                    </StackPanel>
+                </GroupBox>
+                <Grid Margin="2,10,0,2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="buttonEditSettings" Command="{Binding EditSettings}"  IsEnabled="{Binding ConnectionViewModel.CanEditConnectionSetting}" Grid.Column="1" Height="22" Content="Edytuj ustawienia" Grid.ColumnSpan="2"/>
+                </Grid>
             </StackPanel>
         </ScrollViewer>
         <GridSplitter Width="3" HorizontalAlignment="Stretch" Grid.Column="1" />
-        <TabControl x:Name="tabControl" Margin="5,10,10,10" TabStripPlacement="Bottom" Grid.Column="2" IsManipulationEnabled="True">
+        <TabControl x:Name="tabControl" Margin="5,10,10,10" TabStripPlacement="Bottom" Grid.Column="2" IsManipulationEnabled="True" SelectedIndex="{Binding SelectedTabIndex}">
             <TabItem Header="Wykres" DataContext="{Binding PlotViewModel}">
                 <Grid Background="#FFE5E5E5">
                     <oxy:PlotView Model="{Binding Plot}">
@@ -391,11 +552,63 @@
                         <ListView.View>
                             <GridView>
                                 <GridView.Columns>
-                                    <GridViewColumn Width="150" DisplayMemberBinding="{Binding Date, StringFormat='{}{0:dd.MM.yyyy HH:mm:ss}'}" >
-                                        <GridViewColumnHeader Content="Czas" Command="{Binding SortTableView}" CommandParameter="Date"/>
+                                    <GridViewColumn Width="150" DisplayMemberBinding="{Binding DateTime, StringFormat='{}{0:dd.MM.yyyy HH:mm:ss}'}" >
+                                        <GridViewColumnHeader Content="Czas" Command="{Binding SortTableView}" CommandParameter="DateTime"/>
                                     </GridViewColumn>
-                                    <GridViewColumn Width="200" DisplayMemberBinding="{Binding Serie}">
-                                        <GridViewColumnHeader Content="Seria" Command="{Binding SortTableView}" CommandParameter="Serie"/>
+                                    <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}">
+                                        <GridViewColumnHeader Content="Seria" Command="{Binding SortTableView}" CommandParameter="Name"/>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="100" DisplayMemberBinding="{Binding Value}">
+                                        <GridViewColumnHeader Content="Wartość" Command="{Binding SortTableView}" CommandParameter="Value"/>
+                                    </GridViewColumn>
+                                </GridView.Columns>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Wykres (Archiwum)" DataContext="{Binding PlotArchiveViewModel}" Margin="10,0,-10,-0" >
+                <Grid Background="#FFE5E5E5">
+                    <oxy:PlotView Model="{Binding Plot}">
+
+                    </oxy:PlotView>
+                    <Button x:Name="buttonChartMoveToEndArchive" Content="&#10140;l" Padding="-4" HorizontalAlignment="Right" Width="30" Height="22" VerticalAlignment="Top" Foreground="Red" BorderBrush="Red" VerticalContentAlignment="Top" FontSize="20" ToolTip="Przesuń do najnowszych danych" Command="{Binding Path=ChartMoveToEnd}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Tabela (Archiwum)" DataContext="{Binding TableArchiveViewModel}" Margin="10,0,-10,-0">
+                <Grid Background="#FFE5E5E5">
+                    <ListView x:Name="listViewDataArchive" ItemsSource="{Binding TableView}">
+                        <!--Copy feature-->
+                        <ListView.InputBindings>
+                            <KeyBinding Key="C" Modifiers="Ctrl" Command="{Binding Copy}" CommandParameter="{Binding ElementName=listViewDataArchive, Path=SelectedItems}"/>
+                        </ListView.InputBindings>
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Kopiuj" Command="{Binding Copy}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems}" ToolTip="Kopiuje zaznaczone wiersze jako tekst"/>
+                                <MenuItem Header="Usuń" Command="{Binding Delete}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems}" ToolTip="Usuwa wartość pernamentnie - nie można jej przywrócić, usuwana jest także z wykresu"/>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+
+                        <ListView.View>
+                            <GridView>
+                                <GridView.Columns>
+                                    <GridViewColumn Width="150" DisplayMemberBinding="{Binding DateTime, StringFormat='{}{0:dd.MM.yyyy HH:mm:ss}'}" >
+                                        <GridViewColumnHeader Content="Czas" Command="{Binding SortTableView}" CommandParameter="DateTime"/>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}">
+                                        <GridViewColumnHeader Content="Seria" Command="{Binding SortTableView}" CommandParameter="Name"/>
                                     </GridViewColumn>
                                     <GridViewColumn Width="100" DisplayMemberBinding="{Binding Value}">
                                         <GridViewColumnHeader Content="Wartość" Command="{Binding SortTableView}" CommandParameter="Value"/>
@@ -407,7 +620,7 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Label x:Name="labelVersion" Content="v 0.6.9" Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,10,3" VerticalAlignment="Bottom" Width="76" HorizontalContentAlignment="Right"/>
+        <Label x:Name="labelVersion" Content="{Binding Version}" Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,10,3" VerticalAlignment="Bottom" Width="76" HorizontalContentAlignment="Right"/>
 
     </Grid>
 </Window>

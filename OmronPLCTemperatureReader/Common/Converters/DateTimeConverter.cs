@@ -18,7 +18,7 @@ namespace OmronPLCTemperatureReader.Common.Converters
 
             if (dateTime != null)
             {
-                return ((DateTime)(dateTime)).ToString("d.MM.yyyy H:m:s");
+                return ((DateTime)(dateTime)).ToString("d.MM.yyyy H:mm:ss");
             }
 
             return DependencyProperty.UnsetValue;
@@ -29,7 +29,7 @@ namespace OmronPLCTemperatureReader.Common.Converters
             var text = value as string;
             DateTime dateTime;
 
-            if (text != null && DateTime.TryParseExact(value.ToString(), "d.MM.yyyy H:m:s", null, DateTimeStyles.None, out dateTime))
+            if (text != null && DateTime.TryParseExact(value.ToString(), "d.MM.yyyy H:mm:ss", null, DateTimeStyles.None, out dateTime))
             {
                 return dateTime;
             }

@@ -15,18 +15,13 @@ namespace OmronPLCTemperatureReader.ViewModels
     public class ConnectionViewModel : ViewModelBase
     {
         private Plc plc;
-        public ConnectionViewModel(Plc plc)
+        public ConnectionViewModel(ViewModelBase parentViewModel, Plc plc)
         {
+            this.ParentViewModel = parentViewModel;
             plc.ConnectionStatusChanged += Plc_ConnectionStatusChanged;
             this.plc = plc;
             
-            if (Port == default(ushort)) Port = 9600;
-            //Ip = IPAddress.Parse("192.168.1.130");
-            if (Ip == default(IPAddress)) Ip = IPAddress.Parse("192.168.1.51"); //194.187.238.5
-            if (Interval == default(int)) Interval = 5;
             ConnectDisconect = new RelayCommand(ConnectDisconectAction, true);
-            LoadConnectionSettings("settings.xml");
-            OnPropertyChanged("Ip");
         }
 
         private void Plc_ConnectionStatusChanged(object sender, ConnectionStatusChangedArgs e)
@@ -68,6 +63,8 @@ namespace OmronPLCTemperatureReader.ViewModels
             set
             {
                 ip = value;
+                Properties.Settings.Default.IP = value.ToString();
+                Properties.Settings.Default.Save();
                 SetProperty(ref ip, value);
             }
         }
@@ -79,6 +76,8 @@ namespace OmronPLCTemperatureReader.ViewModels
             set
             {
                 port = value;
+                Properties.Settings.Default.Port = value;
+                Properties.Settings.Default.Save();
                 SetProperty(ref port, value);
             }
         }
@@ -90,6 +89,8 @@ namespace OmronPLCTemperatureReader.ViewModels
             set
             {
                 interval = value;
+                Properties.Settings.Default.Interval = value;
+                Properties.Settings.Default.Save();
                 SetProperty(ref interval, value);
             }
         }
@@ -143,30 +144,6 @@ namespace OmronPLCTemperatureReader.ViewModels
         public RelayCommand ConnectDisconect { get; set; }
         CancellationTokenSource connectCancellationTokenSource = new CancellationTokenSource();
 
-        private bool LoadConnectionSettings(string path)
-        {
-
-            string loadSettingsLastError;
-            try
-            {
-                XmlDocument settings = new XmlDocument();
-                loadSettingsLastError = "Błąd podczas ładowania pliku " + path;
-                settings.Load(path);
-                loadSettingsLastError = "Brak korzenia w pliku ustawień";
-                XmlNode settingsRoot = settings.DocumentElement;
-                try { Ip = IPAddress.Parse(settingsRoot.SelectSingleNode("Ip").InnerText); }
-                catch { }
-                try { Port = ushort.Parse(settingsRoot.SelectSingleNode("Port").InnerText); }
-                catch { }
-                try { Interval = int.Parse(settingsRoot.SelectSingleNode("Interval").InnerText); }
-                catch { }
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
         private void ConnectDisconectAction(object obj)
         {
 

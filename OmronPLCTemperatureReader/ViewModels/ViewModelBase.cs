@@ -14,6 +14,7 @@ namespace OmronPLCTemperatureReader.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<string> CommandHandler;
+        public ViewModelBase ParentViewModel;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

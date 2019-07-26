@@ -12,6 +12,7 @@ using System.Xml.Serialization;
 
 namespace OmronPLCTemperatureReader.Models
 {
+    [XmlInclude(typeof(SerieOnline))]
     public class Serie : INotifyPropertyChanged
     {
         public string Name { get; set; }
@@ -82,7 +83,7 @@ namespace OmronPLCTemperatureReader.Models
             foreach (KeyValuePair<DateTime, double> item in itemList) delete(item);
         }
 
-        public List<KeyValuePair<DateTime, double>> findByDateTimeAndValue(DateTime dateTime, int value)
+        public List<KeyValuePair<DateTime, double>> findByDateTimeAndValue(DateTime dateTime, double value)
         {
             List<KeyValuePair<DateTime, double>> result = new List<KeyValuePair<DateTime, double>>();
             foreach (KeyValuePair<DateTime, double> item in Data)

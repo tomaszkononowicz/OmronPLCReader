@@ -9,28 +9,7 @@
         Title="{Binding WindowTitle}" Height="300" Width="277.154"
         x:Name="Window">
     <Grid>
-        <Label x:Name="labelName" Content="Nazwa serii" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <Label x:Name="labelDm" Content="Numer DM" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="textBoxName" Height="23" Margin="85,14,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource textBoxError}">
-            <TextBox.Text>
-                <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
-                    <Binding.ValidationRules>
-                        <rule:TextValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue"/>
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
-        <TextBox x:Name="textBoxDm" Height="23" Margin="85,42,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource textBoxError}">
-            <TextBox.Text>
-                <Binding Path="Dm" UpdateSourceTrigger="PropertyChanged">
-                    <Binding.ValidationRules>
-                        <rule:IntegerValidation ValidatesOnTargetUpdated="True" ValidationStep="RawProposedValue" MinValue="1" MaxValue="65535" ErrorMessage="Wartość powinna być z przedziału od 1 do 65535"/>
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
-        <Label x:Name="labelMultiplication" Content="Mnożnik danych" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="comboBoxMultiplication" Margin="112,70,10,0" VerticalAlignment="Top" Height="26" IsReadOnly="True" ItemsSource="{Binding Multipliers}" DisplayMemberPath="Key" SelectedItem="{Binding MultiplierSelectedItem}"/>
         <Button x:Name="buttonSave" Content="Zapisz" Margin="10,0,0,10" Command="{Binding Save}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Left" Width="75" Height="20" VerticalAlignment="Bottom">
             <Button.Style>
                 <Style TargetType="Button">

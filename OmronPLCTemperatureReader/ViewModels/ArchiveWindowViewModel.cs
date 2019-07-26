@@ -271,18 +271,15 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private void CopyAction(object obj)
         {
-            string copytext = "";
+            StringBuilder textToCopy = new StringBuilder();
             IEnumerable series = obj as IEnumerable;
             foreach (var s in series) {
-                copytext += s.GetType().GetProperty("Date").GetValue(s, null).ToString() + "\t";
-                copytext += s.GetType().GetProperty("Serie").GetValue(s, null).ToString() + "\t";
-                copytext += s.GetType().GetProperty("Value").GetValue(s, null).ToString() + "\r\n";
-                Clipboard.SetText(copytext);
+                textToCopy.Append(s.GetType().GetProperty("Date").GetValue(s, null).ToString() + "\t");
+                textToCopy.Append(s.GetType().GetProperty("Serie").GetValue(s, null).ToString() + "\t");
+                textToCopy.Append(s.GetType().GetProperty("Value").GetValue(s, null).ToString() + "\r\n");
+                
             }
-
-
-            
-            
+            Clipboard.SetText(textToCopy.ToString());
         }
 
         private bool CanChartYRangeSet(object obj)

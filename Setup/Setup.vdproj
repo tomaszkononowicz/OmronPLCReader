@@ -57,12 +57,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_1BBF1BDFF0A141DE8A0B6A629254A693"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_21B4A670D67EA6A11ED9159E0FE7F4CE"
         "OwnerKey" = "8:_0E7519B6B306471F8BD254EDA40157E8"
         "MsmSig" = "8:_UNDEFINED"
@@ -299,6 +293,12 @@
         {
         "MsmKey" = "8:_A2449A104EC7E68C4DA4C55520892F32"
         "OwnerKey" = "8:_0E7519B6B306471F8BD254EDA40157E8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A5FAFAA0E6EF42F5BEC84F620752607C"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -993,26 +993,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1BBF1BDFF0A141DE8A0B6A629254A693"
-            {
-            "SourcePath" = "8:..\\OmronPLCTemperatureReader\\bin\\Debug\\settings.xml"
-            "TargetName" = "8:settings.xml"
-            "Tag" = "8:"
-            "Folder" = "8:_3D253E641B0249739475BFB4F7DC0055"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_21B4A670D67EA6A11ED9159E0FE7F4CE"
@@ -2007,6 +1987,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A5FAFAA0E6EF42F5BEC84F620752607C"
+            {
+            "SourcePath" = "8:..\\OmronPLCReaderIcon.ico"
+            "TargetName" = "8:OmronPLCReaderIcon.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_3D253E641B0249739475BFB4F7DC0055"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A7877A5AE878A0C0246B323F33550E2F"
             {
             "AssemblyRegister" = "3:1"
@@ -2549,7 +2549,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Omron PLC Reader"
         "ProductCode" = "8:{A772EB5C-27D1-4419-A98F-50070ACA9819}"
-        "PackageCode" = "8:{48FAEDA5-37DC-4537-9519-A63F8FAC9D22}"
+        "PackageCode" = "8:{0DE70F5E-A47C-4F47-B9AD-EF22A0EBC596}"
         "UpgradeCode" = "8:{651C6201-CA65-497C-BA63-CD6DBD878A29}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -2669,23 +2669,9 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_4808729596164C90B23046D4AC11A299"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_5AE47C23750C4AECB97D52AA26A087B1"
             {
-            "Name" = "8:Skrót do ustawień programu Omron PLC Reader"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_1BBF1BDFF0A141DE8A0B6A629254A693"
-            "Folder" = "8:_62CF8487E10D4441B27003FF35A992B0"
-            "WorkingFolder" = "8:"
-            "Icon" = "8:"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_53D89C89E4904311861F41239AB654FD"
-            {
-            "Name" = "8:Skrót do programu Omron PLC Reader"
+            "Name" = "8:Omron PLC Reader"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -2693,8 +2679,8 @@
             "Transitive" = "11:FALSE"
             "Target" = "8:_0E7519B6B306471F8BD254EDA40157E8"
             "Folder" = "8:_62CF8487E10D4441B27003FF35A992B0"
-            "WorkingFolder" = "8:_62CF8487E10D4441B27003FF35A992B0"
-            "Icon" = "8:"
+            "WorkingFolder" = "8:_3D253E641B0249739475BFB4F7DC0055"
+            "Icon" = "8:_A5FAFAA0E6EF42F5BEC84F620752607C"
             "Feature" = "8:"
             }
         }
@@ -3098,7 +3084,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_0E7519B6B306471F8BD254EDA40157E8"
             {
-            "SourcePath" = "8:..\\OmronPLCTemperatureReader\\obj\\Release\\OmronPLCTemperatureReader.exe"
+            "SourcePath" = "8:..\\OmronPLCTemperatureReader\\obj\\Debug\\OmronPLCTemperatureReader.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3D253E641B0249739475BFB4F7DC0055"

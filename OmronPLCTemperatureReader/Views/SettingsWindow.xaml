@@ -1,0 +1,32 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OmronPLCTemperatureReader.Views"
+        xmlns:rule="clr-namespace:OmronPLCTemperatureReader.Common.ValidationRules"
+        xmlns:Converters="clr-namespace:OmronPLCTemperatureReader.Common.Converters" x:Class="OmronPLCTemperatureReader.Views.SettingsWindow"
+        mc:Ignorable="d"
+        Title="{Binding WindowTitle}" Height="300" Width="965.593"
+        x:Name="Window">
+    <Grid Margin="0,0,0,0">
+
+        <Separator Margin="10,0,10,43" Height="1" VerticalAlignment="Bottom"/>
+
+        <Button x:Name="buttonSave" Content="Zapisz" Margin="10,0,0,10" Command="{Binding Save}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Left" Width="75" Height="20" VerticalAlignment="Bottom"/>
+        <Button x:Name="buttonCancel" Content="Anuluj" Margin="0,0,10,10" Command="{Binding Cancel}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom"/>
+
+        <Label x:Name="labelSeriesFilePath" Content="Ścieżka do pliku, z którego wczytane zostaną serie przy uruchomieniu programu" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top" Width="606"/>
+        <TextBox x:Name="textBoxSeriesFilePath" Text="{Binding SeriesFilePath}" Height="22" Margin="10,38,111,0" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource textBoxError}" IsEnabled="False"/>
+        <Label x:Name="labelLogsFolderPath" Content="Ścieżka do folderu, gdzie umieszczane będą pliki archiwum" HorizontalAlignment="Left" Margin="10,67,0,0" VerticalAlignment="Top" Width="606"/>
+        <TextBox x:Name="textBoxLogsFolderPath" Text="{Binding LogsFolderPath}" Height="22" Margin="10,93,111,0" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource textBoxError}" IsEnabled="False"/>
+        <Button x:Name="buttonSeriesFilePath" Content=". . ." Command="{Binding BrowseSeriesFilePath}" ToolTip="Przeglądaj" Margin="0,38,78,0" VerticalAlignment="Top" Height="22" HorizontalAlignment="Right" Width="28"/>
+        <Button x:Name="buttonLogsFolderPath" Content=". . ." Command="{Binding BrowseLogsFolderPath}" ToolTip="Przeglądaj" Margin="0,93,78,0" VerticalAlignment="Top" Height="22" HorizontalAlignment="Right" Width="28"/>
+        <Label x:Name="labelLogsFilePrefix" Content="Prefix pliku archiwum" HorizontalAlignment="Left" Margin="10,120,0,0" VerticalAlignment="Top" Width="606"/>
+        <TextBox x:Name="textBoxLogsFilePrefix" Text="{Binding LogsFilePrefix}" Height="22" Margin="10,146,12,0" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource textBoxError}"/>
+        <Button x:Name="buttonSeriesFilePath_Clear" Content="X" Command="{Binding ClearSeriesFilePath}" ToolTip="Wyczyść" Margin="0,38,45,0" VerticalAlignment="Top" Height="22" HorizontalAlignment="Right" Width="28"/>
+        <Button x:Name="buttonSeriesFilePath_GoTo" Content="->" Command="{Binding GoToSeriesFilePath}" ToolTip="Przejdź do folderu" Margin="0,38,12,0" VerticalAlignment="Top" Height="22" HorizontalAlignment="Right" Width="28"/>
+        <Button x:Name="buttonLogsFolderPath_Clear" Content="X" Command="{Binding ClearLogsFolderPath}" ToolTip="Wyczyść" Margin="0,93,45,0" VerticalAlignment="Top" Height="22" HorizontalAlignment="Right" Width="28"/>
+        <Button x:Name="buttonLogsFolderPath_GoTo" Content="->" Command="{Binding GoToLogsFolderPath}" ToolTip="Przejdź do folderu" Margin="0,93,12,0" VerticalAlignment="Top" Height="22" HorizontalAlignment="Right" Width="28"/>
+    </Grid>
+</Window>

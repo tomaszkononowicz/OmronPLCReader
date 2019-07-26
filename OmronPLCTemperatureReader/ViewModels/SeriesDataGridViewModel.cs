@@ -36,15 +36,26 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         #endregion
 
-        protected ObservableCollection<Serie> series;
+        public ObservableCollection<Serie> Series { get; set; }
 
         public SeriesDataGridViewModel(ObservableCollection<Serie> series)
         {
-            this.series = series;
+            this.DeleteSerie = new RelayCommand(DeleteSerieAction);
+            this.HideShowSerie = new RelayCommand(HideShowSerieAction);
+            this.DeleteAllSeries = new RelayCommand(DeleteAllSeriesAction);
+            this.Series = series;
         }
 
-        public string FilePath { get; private set; }
-
+        public string FilePath { get; set; }
+        private Visibility visibility;
+        public Visibility Visibility {
+            get { return visibility; }
+            set
+            {
+                visibility = value;
+                OnPropertyChanged("Visibility");
+            }
+        }
 
 
 
@@ -62,7 +73,7 @@ namespace OmronPLCTemperatureReader.ViewModels
                 selectedItem.Visibility = !selectedItem.Visibility;
             }
             OnPropertyChanged("ButtonHideShowSerieContent");
-            CollectionViewSource.GetDefaultView(series).Refresh();
+            CollectionViewSource.GetDefaultView(Series).Refresh();
             Command("Table.Refresh");
             Command("Plot.Refresh");
         }
@@ -75,8 +86,8 @@ namespace OmronPLCTemperatureReader.ViewModels
             {
                 if (MessageBox.Show("Usunąć serię " + selectedItem.Name + "?", "Potwierdzenie", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == (MessageBoxResult.Yes))
                 {
-                    series.Remove(selectedItem);
-                    CollectionViewSource.GetDefaultView(series).Refresh();
+                    Series.Remove(selectedItem);
+                    CollectionViewSource.GetDefaultView(Series).Refresh();
                     Command("Table.Refresh");
                     Command("Plot.Refresh");
                 }
@@ -91,10 +102,10 @@ namespace OmronPLCTemperatureReader.ViewModels
         {
             if (MessageBox.Show("Usunąć wszystkie serie?", "Potwierdzenie", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == (MessageBoxResult.Yes))
             {
-                while (series.Count > 0)
+                while (Series.Count > 0)
                 {
-                    series.Remove(series[0]);
-                    CollectionViewSource.GetDefaultView(series).Refresh();
+                    Series.Remove(Series[0]);
+                    CollectionViewSource.GetDefaultView(Series).Refresh();
                     Command("Table.Refresh");
                     Command("Plot.Refresh");
                 }

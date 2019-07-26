@@ -17,9 +17,9 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private ObservableCollection<Serie> series;
 
-        public TableViewModel(ObservableCollection<Serie> series)
+        public TableViewModel(ViewModelBase parentViewModel, ObservableCollection<Serie> series)
         {
-
+            this.ParentViewModel = parentViewModel;
             SortTableView = new RelayCommand(SortTableViewAction);
             Copy = new RelayCommand(CopyAction);
             Delete = new RelayCommand(DeleteAction);
@@ -38,12 +38,7 @@ namespace OmronPLCTemperatureReader.ViewModels
                 var list = (from s in series
                             from d in s.Data
                             where s.Visibility == true
-                            select new
-                            {
-                                Date = d.Key,
-                                Serie = s.Name,
-                                Value = d.Value// * s.Multiplier
-                            }).ToList();
+                            select new SerieTable (s.Name, d.Key, d.Value)).ToList();
                 if (ascending == true)
                 {
                     return list.OrderBy((x) =>
@@ -93,27 +88,23 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private void CopyAction(object obj)
         {
-            string copytext = "";
-            IEnumerable items = obj as IEnumerable;
+            StringBuilder sb = new StringBuilder();
+            IEnumerable<SerieTable> items = obj as IEnumerable<SerieTable>;
             foreach (var i in items)
             {
-                copytext += i.GetType().GetProperty("Date").GetValue(i, null).ToString() + "\t";
-                copytext += i.GetType().GetProperty("Serie").GetValue(i, null).ToString() + "\t";
-                copytext += i.GetType().GetProperty("Value").GetValue(i, null).ToString() + "\r\n";
-                Clipboard.SetText(copytext);
+                sb.Append(i.Name).Append("\t").Append(i.DateTime).Append("\t").Append(i.Value).Append("\r\n");
             }
+            Clipboard.SetText(sb.ToString());
         }
 
         private void DeleteAction(object obj)
         {
-            IEnumerable items = obj as IEnumerable;
+            IEnumerable<SerieTable> items = obj as IEnumerable<SerieTable>;
             foreach (var i in items)
             {
-                DateTime dateTime = DateTime.Parse(i.GetType().GetProperty("Date").GetValue(i, null).ToString());
-                int value = int.Parse(i.GetType().GetProperty("Value").GetValue(i, null).ToString());
                 foreach (Serie s in series)
                 {
-                    s.delete(s.findByDateTimeAndValue(dateTime, value));
+                    s.delete(s.findByDateTimeAndValue(i.DateTime, i.Value));
                 }
             }
             OnPropertyChanged("TableView");
