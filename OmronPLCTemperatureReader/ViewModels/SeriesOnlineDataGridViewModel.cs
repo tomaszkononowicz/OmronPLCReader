@@ -259,7 +259,7 @@ namespace OmronPLCTemperatureReader.ViewModels
                         foreach (var pair in serie.Data)
                         {
                             sb.Clear();
-                            var lineToWrite = sb.Append(serie.Name).Append("\t").Append(pair.Key).Append("\t").Append(pair.Value * serie.Multiplier).Append("\r\n").ToString();
+                            var lineToWrite = sb.Append(serie.Name).Append("\t").Append(pair.Key).Append("\t").Append(pair.Value).Append("\r\n").ToString();
                             byte[] bytesToWrite = new UTF8Encoding(true).GetBytes(lineToWrite);
                             fs.Write(bytesToWrite, 0, bytesToWrite.Length);
                         }

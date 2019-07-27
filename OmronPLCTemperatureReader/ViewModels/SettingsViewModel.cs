@@ -37,6 +37,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             {
                 logsFolderPath = value;
                 SetProperty(ref logsFolderPath, value);
+                OnPropertyChanged();
             }
         }
 
@@ -48,6 +49,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             {
                 logsFilePrefix = value;
                 SetProperty(ref logsFilePrefix, value);
+                OnPropertyChanged();
             }
         }
 

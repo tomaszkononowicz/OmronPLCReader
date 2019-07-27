@@ -105,7 +105,11 @@ namespace OmronPLCTemperatureReader.ViewModels
                                 var dateTime = DateTime.Parse(lineSplitted[1]);
                                 var value = double.Parse(lineSplitted[2]);
                                 var serie = findOrCreateSerieByName(name);
-                                serie.Data.Add(new Models.KeyValuePair<DateTime, double>(dateTime, value));
+                                var isDuplicate = serie.ExistDateTime(dateTime);
+                                if (!isDuplicate)
+                                {
+                                    serie.Data.Add(new Models.KeyValuePair<DateTime, double>(dateTime, value));
+                                }
                             }
                         }
                     }

@@ -93,6 +93,18 @@ namespace OmronPLCTemperatureReader.Models
             return result;
         }
 
+        public bool ExistDateTime(DateTime dateTime)
+        {
+            foreach (KeyValuePair<DateTime, double> item in Data)
+            {
+                if (item.Key.Equals(dateTime))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public void saveToFile(DateTime dateTime, int value, string directory, string fileNamePrefix)
         {
 
