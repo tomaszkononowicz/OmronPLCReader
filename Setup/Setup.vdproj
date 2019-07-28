@@ -2548,15 +2548,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Omron PLC Reader"
-        "ProductCode" = "8:{A772EB5C-27D1-4419-A98F-50070ACA9819}"
-        "PackageCode" = "8:{0DE70F5E-A47C-4F47-B9AD-EF22A0EBC596}"
+        "ProductCode" = "8:{C314C8B2-194C-4AE5-B515-1223810918D3}"
+        "PackageCode" = "8:{7EB3D2AB-8AC0-4910-97DC-9B6E4028273A}"
         "UpgradeCode" = "8:{651C6201-CA65-497C-BA63-CD6DBD878A29}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:0.7.6"
         "Manufacturer" = "8:Preszaf"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -3084,7 +3084,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_0E7519B6B306471F8BD254EDA40157E8"
             {
-            "SourcePath" = "8:..\\OmronPLCTemperatureReader\\obj\\Debug\\OmronPLCTemperatureReader.exe"
+            "SourcePath" = "8:..\\OmronPLCTemperatureReader\\obj\\Release\\OmronPLCTemperatureReader.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3D253E641B0249739475BFB4F7DC0055"
