@@ -40,12 +40,6 @@ namespace OmronPLCTemperatureReader.Views
         /// DM konfiguracyjny np sprawdzający licencję
         /// Usuwanie gdy za dużo 
 
-        /// 83.12.23.58 - Suwałki
-        /// 194.187.238.5
-        /// Port 9600
-        /// DM 2068 216
-        /// 2368 222
-        /// 191112
         /// wpis godzina wartosc seria></wpis>
         /*
 

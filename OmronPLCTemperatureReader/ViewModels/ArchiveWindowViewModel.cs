@@ -528,7 +528,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             //As default in properties region
             if (Port == default(ushort)) Port = 9600;
             //Ip = IPAddress.Parse("192.168.1.130");
-            if (Ip == default(IPAddress)) Ip = IPAddress.Parse("194.187.238.5");
+            if (Ip == default(IPAddress)) Ip = IPAddress.Parse("1.1.1.1");
             if (Interval == default(int)) Interval = 1;
             if (Series == default(ObservableCollection<SerieOnline>)) Series = new ObservableCollection<SerieOnline>();
             if (Login == default(string)) Login = "";
