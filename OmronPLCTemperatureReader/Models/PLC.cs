@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using mcOMRON;
-using System.Net;
-using System.Windows;
+﻿using mcOMRON;
 using OmronPLCTemperatureReader.Common;
+using System;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Timers;
-using System.Diagnostics;
+using System.Windows;
 
 namespace OmronPLCTemperatureReader.Models
 {
     public class Plc
     {
-        Random random = new Random();
         OmronPLC omronPlc;
-        mcOMRON.tcpFINSCommand tcpCommand;
+        tcpFINSCommand tcpCommand;
         public event EventHandler<ConnectionStatusChangedArgs> ConnectionStatusChanged;
 
         private ConnectionStatusEnum connectionStatus;
@@ -35,6 +30,22 @@ namespace OmronPLCTemperatureReader.Models
         private const int autoReconnectAfterConnectionLostMax = 0;
         public int AutoReconnectAfterConnectionLostMax { get { return autoReconnectAfterConnectionLostMax; } }
         public int AutoReconnectAfterConnectionLostCounter { get; set; }
+        public int NadsError
+        {
+            get
+            {
+                if (omronPlc != null && !string.IsNullOrWhiteSpace(omronPlc.LastError))
+                {
+                    string[] words = omronPlc.LastError.Split(' ');
+                    int.TryParse(words[words.Length - 1], out int result);
+                    return result;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
         private IPAddress ip;
         private ushort port;
         Timer connectionMonitor;
@@ -43,7 +54,7 @@ namespace OmronPLCTemperatureReader.Models
         public Plc()
         {
             omronPlc = new OmronPLC(mcOMRON.TransportType.Tcp);
-            tcpCommand = ((mcOMRON.tcpFINSCommand)omronPlc.FinsCommand);
+            tcpCommand = (tcpFINSCommand)omronPlc.FinsCommand;
             connectionMonitor = new Timer();
             connectionMonitor.Elapsed += ConnectionMonitor_Elapsed; ;
             connectionMonitor.Interval = 2000;
@@ -53,109 +64,100 @@ namespace OmronPLCTemperatureReader.Models
             
         }
 
-
-        private bool tryAndConnect()
+        private bool Ping()
         {
-            
-            Func<bool> testDataRead = (() =>
+            using (Ping ping = new Ping())
             {
-                
-                try {
-                    if (omronPlc.finsConnectionDataRead(0))
-                        return true;
-                }
-                catch (Exception e) { return false; }
-                return false;
-            });
-            Func<bool> testNewConnect = (() =>
-            {
-                
-                try
-                {
-                    omronPlc = new OmronPLC(mcOMRON.TransportType.Tcp);
-                    tcpCommand = ((mcOMRON.tcpFINSCommand)omronPlc.FinsCommand);
-                    tcpCommand.SetTCPParams(ip, port);
-                    if (omronPlc.Connect()) { //why exception
-                        //omronPlc.Close();
-                        return true;
-                    }                   
-                }
-                catch (Exception e) { return false; }
-                return false;
-            });
-            if (testDataRead()) return true;
-            else if (testNewConnect()) return true;
-            return false;
-
+                PingReply pingReply = ping.Send(ip, Properties.Settings.Default.PingTimeoutMiliseconds);
+                //Console.WriteLine($"[{DateTime.Now}] PingReplyStatus: {pingReply.Status} Time: {pingReply.RoundtripTime}");
+                return (pingReply.Status == IPStatus.Success) ? true : false;
+            }
         }
-
 
         private void ConnectionMonitor_Elapsed(object sender, ElapsedEventArgs e)
         {
             
             if (ConnectionStatus != ConnectionStatusEnum.DISCONNECTED)
             {
+                
                 if (ConnectionStatus == ConnectionStatusEnum.CONNECTED)
                 {
-                    lock (lockerOnlyOneFrameSendInTheSameTime)
+                    bool ping = this.Ping();
+                    if (!ping)
                     {
-                        if (!tryAndConnect())
-                        {
-                            //Console.WriteLine(omronPlc.LastError);
-                            //Console.WriteLine(ConnectionStatusEnum.CONNECTION_LOST);
-                            ConnectionStatus = ConnectionStatusEnum.CONNECTION_LOST;
-                        }
+                        ConnectionStatus = ConnectionStatusEnum.CONNECTION_LOST;
                     }
                 }
-                if (ConnectionStatus == ConnectionStatusEnum.CONNECTION_LOST ||
-                    ConnectionStatus == ConnectionStatusEnum.RECONNECTING)
+                else
                 {
-                    connect(ip, port, true);
+                    if (ConnectionStatus == ConnectionStatusEnum.CONNECTION_LOST || ConnectionStatus == ConnectionStatusEnum.RECONNECTING)
+                    {
+                        ConnectionStatus = ConnectionStatusEnum.RECONNECTING;
+                        AutoReconnectAfterConnectionLostCounter++;
+                        Reconnect();
+                    }
+                }
+                
+            }
+        }
+
+        private void Reconnect()
+        {
+            bool ping = this.Ping();
+            if (ping)
+            {
+                if (ping)
+                {
+                    if (omronPlc.Connect())
+                    {
+                        ConnectionStatus = ConnectionStatusEnum.CONNECTED;
+                        AutoReconnectAfterConnectionLostCounter = 0;
+                    }
                 }
             }
         }
 
-        public bool connect(IPAddress ip, ushort port, bool reconnect = false)
+        public bool Connect(IPAddress ip, ushort port)
         {
-            
-            try
+            if (ConnectionStatus == ConnectionStatusEnum.CONNECTION_FAILED ||
+            ConnectionStatus == ConnectionStatusEnum.CONNECTION_LOST ||
+            ConnectionStatus == ConnectionStatusEnum.DISCONNECTED ||
+            ConnectionStatus == ConnectionStatusEnum.RECONNECTING)
             {
-                omronPlc.Close();
-            }
-            catch { }
-            this.ip = ip;
-            this.port = port;
-            if (reconnect)
-            {
-                ConnectionStatus = ConnectionStatusEnum.RECONNECTING;
-                AutoReconnectAfterConnectionLostCounter++;
-            }
-            else ConnectionStatus = ConnectionStatusEnum.CONNECTING;
-            tcpCommand.SetTCPParams(ip, port);
-            if (!tryAndConnect())
-            {
-                if (ConnectionStatus != ConnectionStatusEnum.DISCONNECTED &&
-                    ConnectionStatus != ConnectionStatusEnum.RECONNECTING)
+                this.ip = ip;
+                this.port = port;
+                ConnectionStatus = ConnectionStatusEnum.CONNECTING;
+                tcpCommand.SetTCPParams(ip, port);
+                bool ping = Ping();
+                if (ping)
                 {
-                    ConnectionStatus = ConnectionStatusEnum.CONNECTION_FAILED;
-                    connectionMonitor.Enabled = false;
+                    if (omronPlc.Connect())
+                    {
+                        ConnectionStatus = ConnectionStatusEnum.CONNECTED;
+                        AutoReconnectAfterConnectionLostCounter = 0;
+                        connectionMonitor.Enabled = true;
+                        return true;
+                    }
                 }
+                else
+                {
+                    MessageBox.Show($"Błąd połączenia: Ping to {ip} failed", "PLCMonitor", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                ConnectionStatus = ConnectionStatusEnum.CONNECTION_FAILED;
+                connectionMonitor.Enabled = false;
                 return false;
             }
-            ConnectionStatus = ConnectionStatusEnum.CONNECTED;
-            AutoReconnectAfterConnectionLostCounter = 0;
-            connectionMonitor.Enabled = true;
-            return true;
+            return false;
         }
 
-        public bool disconnect()
+        public bool Disconnect()
         {
             ConnectionStatus = ConnectionStatusEnum.DISCONNECTING;
             try
             {
-                ConnectionStatus = ConnectionStatusEnum.DISCONNECTED;
+                omronPlc.Close();
                 connectionMonitor.Enabled = false;
-                omronPlc.Close();      
+                ConnectionStatus = ConnectionStatusEnum.DISCONNECTED;
             }
             catch
             {
@@ -164,35 +166,20 @@ namespace OmronPLCTemperatureReader.Models
             return true;
         }
 
-
-
-        public int? getValue(ushort dm)
+        public int? GetValue(ushort dm)
         {
-            
             lock (lockerOnlyOneFrameSendInTheSameTime)
             {
-                
-                try
+                if (ConnectionStatus == ConnectionStatusEnum.CONNECTED)
                 {
-                    omronPlc.Close();
-                }
-                catch {
-                    Console.WriteLine(omronPlc.LastError);
-                };
-                short result = 0;
-                if (tryAndConnect() && ConnectionStatus == ConnectionStatusEnum.CONNECTED) {
-                    omronPlc.ReadDM(dm, ref result);
-                    if (tryAndConnect() && ConnectionStatus == ConnectionStatusEnum.CONNECTED)
+                    short result = 0;
+                    if (omronPlc.ReadDM(dm, ref result))
                     {
-                        
                         return result;
                     }
-                    }
+                }
             }
-            
-                return null;
-
-           
+            return null;
         }
     }
 }

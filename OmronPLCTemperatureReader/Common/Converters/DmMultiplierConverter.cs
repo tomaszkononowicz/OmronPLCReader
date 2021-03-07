@@ -36,12 +36,9 @@ namespace OmronPLCTemperatureReader.Common.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var text = value as string;
-            var multiplier = parameter as double?;
-            double doubleValue;
-
-            if (text != null && double.TryParse(text, out doubleValue))
+            if (value is string text && double.TryParse(text, out double doubleValue))
             {
+                var multiplier = parameter as double?;
                 if (multiplier != null)
                 {
                     return doubleValue / multiplier;

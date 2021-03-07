@@ -3,10 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="IP" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">192.168.100.10</Value>
     </Setting>
     <Setting Name="Port" Type="System.UInt16" Scope="User">
-      <Value Profile="(Default)">9600</Value>
+      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="Interval" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
@@ -19,6 +19,24 @@
     </Setting>
     <Setting Name="LogsFilePrefix" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="TerminalIP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">192.168.100.11</Value>
+    </Setting>
+    <Setting Name="TerminalPort" Type="System.UInt16" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="TerminalLogin" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="TerminalPassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="TerminalConnectionTimeoutSeconds" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="PingTimeoutMiliseconds" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1000</Value>
     </Setting>
   </Settings>
 </SettingsFile>

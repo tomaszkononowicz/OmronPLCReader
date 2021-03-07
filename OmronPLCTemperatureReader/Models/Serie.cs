@@ -13,19 +13,41 @@ using System.Xml.Serialization;
 namespace OmronPLCTemperatureReader.Models
 {
     [XmlInclude(typeof(SerieOnline))]
-    public class Serie : INotifyPropertyChanged
+    public class Serie : INotifyPropertyChanged, ICloneable
     {
-        public string Name { get; set; }
+        private string name;
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+            set
+            {
+                name = value;
+                OnPropertyChanged(nameof(Name));
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        [XmlIgnore]
+        public Guid Id { get; private set; }
 
         [XmlIgnore]
         public ObservableCollection<KeyValuePair<DateTime, double>> Data { get; set; }
         private bool visibility;
         public bool Visibility
         {
-            get { return visibility; }
-            set { visibility = value; OnPropertyChanged("Visibility"); }
+            get 
+            { 
+                return visibility; 
+            }
+            set 
+            {
+                visibility = value; 
+                OnPropertyChanged(nameof(Visibility)); 
+            }
         }
         private double multiplier;
         public double Multiplier
@@ -40,15 +62,24 @@ namespace OmronPLCTemperatureReader.Models
                     }
                 }
                 multiplier = value;
+                OnPropertyChanged(nameof(Multiplier));
             }
         }
 
-
+        public Serie(string name, bool visibility, double multiplier)
+        {
+            Name = name;
+            Visibility = visibility;
+            Data = new ObservableCollection<KeyValuePair<DateTime, double>>();
+            Multiplier = multiplier;
+            Id = Guid.NewGuid();
+        }
         public Serie()
         {
             multiplier = 1;          
             Data = new ObservableCollection<KeyValuePair<DateTime, double>>();
             Visibility = true;
+            Id = Guid.NewGuid();
 
         }
         public Serie(string name, double multiplier = 1)
@@ -59,6 +90,7 @@ namespace OmronPLCTemperatureReader.Models
             Name = name;
             Visibility = true;
             Multiplier = multiplier;
+            Id = Guid.NewGuid();
         }
 
         public void add(DateTime dateTime, int value)
@@ -122,5 +154,9 @@ namespace OmronPLCTemperatureReader.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

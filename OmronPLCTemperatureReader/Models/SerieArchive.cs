@@ -14,7 +14,6 @@ namespace OmronPLCTemperatureReader.Models
 {
     public class SerieArchive : Serie
     {
-
         public SerieArchive() : base() {  }
         public SerieArchive(string name, double multiplier = 1) : base(name, multiplier) { }
     }

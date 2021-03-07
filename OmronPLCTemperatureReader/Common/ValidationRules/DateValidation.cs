@@ -10,9 +10,6 @@ namespace OmronPLCTemperatureReader.Common.ValidationRules
 {
     public class DateValidation : ValidationRule
     {
-        //public int? MinValue { get; set; }
-        //public int? MaxValue { get; set; }
-        //public string ErrorMessage { get; set; }
         public string Pattern { get; set; }
         public string PatternErrorMessage { get; set; }
         public bool CanBeEmpty { get; set; } = false;

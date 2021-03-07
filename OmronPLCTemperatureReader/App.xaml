@@ -11,6 +11,7 @@
                 <ResourceDictionary Source="Views/Resources/DataGridTextColumnStrikethrough.xaml"/>
                 <ResourceDictionary Source="Views/Resources/ButtonEnabledIfSerieOnlineSelected.xaml"/>
                 <ResourceDictionary Source="Views/Resources/ButtonEnabledIfSerieArchiveSelected.xaml"/>
+                <ResourceDictionary Source="Views/Resources/ButtonEnabledIfSerieUsbSelected.xaml"/>
                 <ResourceDictionary Source="Views/Resources/ButtonEnabledIfSerieExist.xaml"/>
                 <ResourceDictionary Source="Views/Resources/ScrollBarVerticalWithoutArrows.xaml"/>
             </ResourceDictionary.MergedDictionaries>

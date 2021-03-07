@@ -90,25 +90,31 @@ namespace OmronPLCTemperatureReader.ViewModels
         {
             StringBuilder sb = new StringBuilder();
             IEnumerable<SerieTable> items = obj as IEnumerable<SerieTable>;
-            foreach (var i in items)
+            if (items != null)
             {
-                sb.Append(i.Name).Append("\t").Append(i.DateTime).Append("\t").Append(i.Value).Append("\r\n");
+                foreach (var i in items)
+                {
+                    sb.Append(i.Name).Append("\t").Append(i.DateTime).Append("\t").Append(i.Value).Append("\r\n");
+                }
+                Clipboard.SetText(sb.ToString());
             }
-            Clipboard.SetText(sb.ToString());
         }
 
         private void DeleteAction(object obj)
         {
             IEnumerable<SerieTable> items = obj as IEnumerable<SerieTable>;
-            foreach (var i in items)
+            if (items != null)
             {
-                foreach (Serie s in series)
+                foreach (var i in items)
                 {
-                    s.delete(s.findByDateTimeAndValue(i.DateTime, i.Value));
+                    foreach (Serie s in series)
+                    {
+                        s.delete(s.findByDateTimeAndValue(i.DateTime, i.Value));
+                    }
                 }
+                OnPropertyChanged("TableView");
+                Command("Plot.Refresh");
             }
-            OnPropertyChanged("TableView");
-            Command("Plot.Refresh");
         }
 
 

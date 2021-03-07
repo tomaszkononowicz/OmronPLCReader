@@ -21,17 +21,13 @@ namespace OmronPLCTemperatureReader.Common.ValidationRules
         {
             if (IsEnabled)
             {
-                int i;
                 if (!(CanBeEmpty) && value.ToString().Equals(""))
                     return new ValidationResult(false, "To pole nie może być puste");
-                else
-                if ((CanBeEmpty) && value.ToString().Equals(""))
+                else if ((CanBeEmpty) && value.ToString().Equals(""))
                     return ValidationResult.ValidResult;
-                else
-                if (!int.TryParse(value.ToString(), out i))
+                else if (!int.TryParse(value.ToString(), out int i))
                     return new ValidationResult(false, "Podana wartość nie jest liczbą!");
-                else
-                if (i < (MinValue ?? i) || i > (MaxValue ?? i))
+                else if (i < (MinValue ?? i) || i > (MaxValue ?? i))
                     return new ValidationResult(false, ErrorMessage);
                 else
                     return ValidationResult.ValidResult;

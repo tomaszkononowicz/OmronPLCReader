@@ -26,10 +26,7 @@ namespace OmronPLCTemperatureReader.Common.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var text = value as string;
-            DateTime dateTime;
-
-            if (text != null && DateTime.TryParseExact(value.ToString(), "d.MM.yyyy H:mm:ss", null, DateTimeStyles.None, out dateTime))
+            if (value != null && DateTime.TryParseExact(value.ToString(), "d.MM.yyyy H:mm:ss", null, DateTimeStyles.None, out DateTime dateTime))
             {
                 return dateTime;
             }

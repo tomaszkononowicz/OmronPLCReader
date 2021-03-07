@@ -14,9 +14,7 @@ namespace OmronPLCTemperatureReader.Common.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var ipAddress = value as IPAddress;
-
-            if (ipAddress != null)
+            if (value is IPAddress ipAddress)
             {
                 return ipAddress.ToString();
             }
@@ -26,10 +24,7 @@ namespace OmronPLCTemperatureReader.Common.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var text = value as string;
-            IPAddress ipAddress;
-
-            if (text != null && IPAddress.TryParse(text, out ipAddress))
+            if (value is string text && IPAddress.TryParse(text, out IPAddress ipAddress))
             {
                 return ipAddress;
             }

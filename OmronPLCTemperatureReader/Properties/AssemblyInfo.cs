@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("OmronPLCReader")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("TomaszKononowicz")]
+[assembly: AssemblyCompany("Preszaf")]
 [assembly: AssemblyProduct("OmronPLCReader")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCopyright("Copyright © 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.7.6")]
-[assembly: AssemblyFileVersion("0.7.6")]
+[assembly: AssemblyVersion("0.8.1")]
+[assembly: AssemblyFileVersion("0.8.1")]

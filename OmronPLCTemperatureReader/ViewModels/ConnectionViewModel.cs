@@ -30,6 +30,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             OnPropertyChanged("ConnectionStatus");
             OnPropertyChanged("ButtonConnectDisconnectContent");
             OnPropertyChanged("CanEditConnectionSetting");
+            OnPropertyChanged("NadsError");
             //switch (e)
             //{
             //    case ConnectionStatusEnum.CONNECTED:
@@ -95,6 +96,35 @@ namespace OmronPLCTemperatureReader.ViewModels
             }
         }
 
+        public string NadsError
+        {
+            get
+            {
+                switch (plc.NadsError)
+                {
+                    case 1:
+                        return "The header is not ‘FINS’ (ASCII code)";
+                    case 2:
+                        return "The data length is too long";
+                    case 3:
+                        return "The command is not supported";
+                    case 32:
+                        return "Wszystkie możliwe połączenia są zajęte";
+                    case 33:
+                        return "The specified node is already connected";
+                    case 34:
+                        return "Attempt to access a protected node from an unspecified IP address";
+                    case 35:
+                        return "The client FINS node address is out of range";
+                    case 36:
+                        return "The same FINS node address is being used by the client and server";
+                    case 37:
+                        return "All the node addresses available for allocation have been used";
+                    default: return null;
+                }
+            }
+        }
+
         public string ButtonConnectDisconnectContent
         {
             get
@@ -146,26 +176,24 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         private void ConnectDisconectAction(object obj)
         {
-
             if (plc.ConnectionStatus == ConnectionStatusEnum.CONNECTING ||
+                plc.ConnectionStatus == ConnectionStatusEnum.CONNECTED ||
                 plc.ConnectionStatus == ConnectionStatusEnum.RECONNECTING)
             {
+                plc.Disconnect();
                 connectCancellationTokenSource.Cancel();
-                plc.disconnect();
-                connectCancellationTokenSource = new CancellationTokenSource();
             }
-            else if (plc.ConnectionStatus == ConnectionStatusEnum.CONNECTED)
-            {
-                plc.disconnect();
-            }
-            else if (plc.ConnectionStatus != ConnectionStatusEnum.CONNECTING &&
+            else {
+                if (plc.ConnectionStatus != ConnectionStatusEnum.CONNECTING &&
                      plc.ConnectionStatus != ConnectionStatusEnum.DISCONNECTING &&
                      plc.ConnectionStatus != ConnectionStatusEnum.RECONNECTING)
-            {
-                Task.Run(new Action(() =>
                 {
-                    plc.connect(ip, port);
-                }), connectCancellationTokenSource.Token);
+                    connectCancellationTokenSource = new CancellationTokenSource();
+                    Task.Run(new Action(() =>
+                    {
+                        plc.Connect(ip, port);
+                    }), connectCancellationTokenSource.Token);
+                }
             }
         }
     }

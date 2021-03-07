@@ -1,14 +1,6 @@
 ﻿using OmronPLCTemperatureReader.Commands;
-using OmronPLCTemperatureReader.Models;
-using System;
-using System.Collections;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace OmronPLCTemperatureReader.ViewModels
@@ -53,7 +45,31 @@ namespace OmronPLCTemperatureReader.ViewModels
             }
         }
 
-        
+        private int terminalConnectionTimeoutSeconds;
+        public int TerminalConnectionTimeoutSeconds
+        {
+            get { return terminalConnectionTimeoutSeconds; }
+            set
+            {
+                terminalConnectionTimeoutSeconds = value;
+                SetProperty(ref terminalConnectionTimeoutSeconds, value);
+                OnPropertyChanged();
+            }
+        }
+
+        private int pingTimeoutMiliseconds;
+        public int PingTimeoutMiliseconds
+        {
+            get { return pingTimeoutMiliseconds; }
+            set
+            {
+                pingTimeoutMiliseconds = value;
+                SetProperty(ref pingTimeoutMiliseconds, value);
+                OnPropertyChanged();
+            }
+        }
+
+
 
         #endregion
 
@@ -93,6 +109,8 @@ namespace OmronPLCTemperatureReader.ViewModels
             Properties.Settings.Default.SeriesFilePath = SeriesFilePath;
             Properties.Settings.Default.LogsFolderPath = LogsFolderPath;
             Properties.Settings.Default.LogsFilePrefix = LogsFilePrefix;
+            Properties.Settings.Default.TerminalConnectionTimeoutSeconds = TerminalConnectionTimeoutSeconds;
+            Properties.Settings.Default.PingTimeoutMiliseconds = PingTimeoutMiliseconds;
             Properties.Settings.Default.Save();
             Window window = obj as Window;
             window.DialogResult = true;
@@ -112,6 +130,8 @@ namespace OmronPLCTemperatureReader.ViewModels
             SeriesFilePath = Properties.Settings.Default.SeriesFilePath;
             LogsFolderPath = Properties.Settings.Default.LogsFolderPath;
             LogsFilePrefix = Properties.Settings.Default.LogsFilePrefix;
+            TerminalConnectionTimeoutSeconds = Properties.Settings.Default.TerminalConnectionTimeoutSeconds;
+            PingTimeoutMiliseconds = Properties.Settings.Default.PingTimeoutMiliseconds;
 
             Save = new RelayCommand(SaveAction, CanSave);
             Cancel = new RelayCommand(CancelAction, CanCancel);

@@ -26,14 +26,14 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>6</ApplicationRevision>
+    <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -71,7 +71,16 @@
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>PLCMonitor.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack, Version=1.11.30.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.11.30\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
+    </Reference>
     <Reference Include="OxyPlot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
       <HintPath>..\packages\OxyPlot.Core.1.0.0\lib\net45\OxyPlot.dll</HintPath>
       <Private>True</Private>
@@ -82,8 +91,13 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -110,6 +124,12 @@
     <Compile Include="Common\ValidationRules\DateValidation.cs" />
     <Compile Include="Common\ValidationRules\TextValidation.cs" />
     <Compile Include="Common\ValidationRules\IntegerValidation.cs" />
+    <Compile Include="CustomInstallationActions.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomInstallationActions.Designer.cs">
+      <DependentUpon>CustomInstallationActions.cs</DependentUpon>
+    </Compile>
     <Compile Include="mcOmron\BytesTools.cs" />
     <Compile Include="mcOmron\FINSCommands\IFinsCommand.cs" />
     <Compile Include="mcOmron\TransportLayer\ITransport.cs" />
@@ -118,29 +138,45 @@
     <Compile Include="mcOmron\TransportLayer\tcpTransport.cs" />
     <Compile Include="mcOmron\TransportLayer\udpTransport.cs" />
     <Compile Include="Models\ConnectionStatusChangedArgs.cs" />
-    <Compile Include="Models\FTPClient.cs" />
     <Compile Include="Models\KeyValuePair.cs" />
     <Compile Include="Models\Plc.cs" />
     <Compile Include="Models\Serie.cs" />
     <Compile Include="Models\SerieArchive.cs" />
     <Compile Include="Models\SerieOnline.cs" />
     <Compile Include="Models\SerieTable.cs" />
+    <Compile Include="Models\SerieUsb.cs" />
+    <Compile Include="Models\TerminalFile.cs" />
+    <Compile Include="Services\TerminalService.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\ArchiveWindowViewModel.cs" />
+    <Compile Include="ViewModels\ConnectionTerminalViewModel.cs" />
     <Compile Include="ViewModels\ConnectionViewModel.cs" />
     <Compile Include="ViewModels\PlotViewModel.cs" />
+    <Compile Include="ViewModels\SeriesUsbDataGridViewModel.cs" />
     <Compile Include="ViewModels\SeriesArchiveDataGridViewModel.cs" />
     <Compile Include="ViewModels\SeriesOnlineDataGridViewModel.cs" />
     <Compile Include="ViewModels\SeriesDataGridViewModel.cs" />
+    <Compile Include="ViewModels\SeriesBulkEditViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SerieViewModel.cs" />
     <Compile Include="ViewModels\TableViewModel.cs" />
+    <Compile Include="ViewModels\TerminalFileBrowserViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\TerminalFileBrowserWindow.xaml.cs">
+      <DependentUpon>TerminalFileBrowserWindow.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Views\SeriesBulkEditWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Resources\ButtonEnabledIfSerieUsbSelected.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\SettingsWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -148,10 +184,6 @@
     <Page Include="Views\AddEditSerieWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ArchiveWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -161,14 +193,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Views\SeriesBulkEditWindow.xaml.cs">
+      <DependentUpon>SeriesBulkEditWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\AddEditSerieWindow.xaml.cs">
       <DependentUpon>AddEditSerieWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ArchiveWindow.xaml.cs">
-      <DependentUpon>ArchiveWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -202,6 +234,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\TerminalFileBrowserWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
@@ -216,6 +252,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
     <AppDesigner Include="Properties\" />
@@ -223,6 +260,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\License.rtf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -241,7 +279,35 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <PublishFile Include="Resources\Icons\PLCMonitor-GreenDots.svg">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="Resources\Icons\PLCMonitor-RedDots.svg">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ProductCodes.txt" />
+    <Resource Include="PLCMonitor.ico" />
+    <Content Include="Resources\Icons\PLCMonitor-GreenDots.svg" />
+    <Content Include="Resources\Icons\PLCMonitor-RedDots.svg" />
+    <Resource Include="Resources\Icons\PLCMonitor.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

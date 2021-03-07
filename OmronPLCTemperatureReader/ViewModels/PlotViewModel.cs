@@ -21,16 +21,7 @@ namespace OmronPLCTemperatureReader.ViewModels
         private PlotModel plot;
         private ObservableCollection<Serie> series;
         private ObservableCollection<RectangleAnnotation> connectionRefusedAreas = new ObservableCollection<RectangleAnnotation>();
-        private Visibility visibility;
-        public Visibility Visibility
-        {
-            get { return visibility; }
-            set
-            {
-                visibility = value;
-                OnPropertyChanged("Visibility");
-            }
-        }
+
         public PlotModel Plot
         {
             get
@@ -196,16 +187,15 @@ namespace OmronPLCTemperatureReader.ViewModels
         public void ConnectionStatusChanged(object sender, ConnectionStatusChangedArgs e)
         {
             DateTime now = DateTime.Now;
+            Console.WriteLine($"ConnectionStatusChanged {e.Actual} {now}");
             switch (e.Actual)
             {
                 case ConnectionStatusEnum.CONNECTED:
-                    Console.WriteLine("Połączono" + now);
+                case ConnectionStatusEnum.DISCONNECTED:
                     if (connectionRefusedAreas.Count > 0)
                         connectionRefusedAreas.Last().MaximumX = DateTimeAxis.ToDouble(now);
                     break;
                 case ConnectionStatusEnum.CONNECTION_LOST:
-                case ConnectionStatusEnum.DISCONNECTING:
-                    Console.WriteLine("Połączenie utracone " + now);
                     RectangleAnnotation ra = new RectangleAnnotation
                     {
                         MinimumX = DateTimeAxis.ToDouble(now),
@@ -215,7 +205,8 @@ namespace OmronPLCTemperatureReader.ViewModels
                     connectionRefusedAreas.Add(ra);
                     break;
             }
-
+            ChartMove();
+            Plot.InvalidatePlot(true);
         }
 
         private void ConnectionRefusedTimes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

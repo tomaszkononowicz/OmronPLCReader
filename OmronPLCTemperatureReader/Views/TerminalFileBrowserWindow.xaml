@@ -1,0 +1,49 @@
+﻿<Window x:Class="OmronPLCTemperatureReader.Views.TerminalFileBrowserWindow"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:local="clr-namespace:OmronPLCTemperatureReader.Views"
+        xmlns:rule="clr-namespace:OmronPLCTemperatureReader.Common.ValidationRules"
+        mc:Ignorable="d"
+        Title="Wybierz plik do zaimportowania" Height="500" Width="600"
+        x:Name="Window">
+    <Grid>
+        <Button x:Name="buttonSave" Content="Importuj" Margin="10,0,0,10" Command="{Binding Import}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Left" Width="75" Height="20" VerticalAlignment="Bottom"/>
+        <Button x:Name="buttonRefresh" Content="Odśwież" Margin="95,0,0,10" Command="{Binding RefreshFiles, UpdateSourceTrigger=PropertyChanged}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Left" Width="75" Height="20" VerticalAlignment="Bottom" />
+        <Button x:Name="buttonCancel" Content="Anuluj" Margin="0,0,10,10" Command="{Binding Cancel}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom"/>
+        <TreeView x:Name="treeViewTerminalFileBrowser" Margin="0,0,0,40" ItemsSource="{Binding TerminalFiles, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+            <!--<TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem">
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                    <Setter Property="Background" Value="Black" />
+                </Style>
+            </TreeView.ItemContainerStyle>-->
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal" Margin="2">
+                        <!--<Image Source="Thing.png" Width="16" Height="16" SnapsToDevicePixels="True"/>-->
+                        <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  Margin="5,0"/>
+                    </StackPanel>
+
+                </HierarchicalDataTemplate>
+
+            </TreeView.ItemTemplate>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectedItemChanged">
+                    <i:InvokeCommandAction 
+                         Command="{Binding TreeViewSelectItemCommand}"
+                         CommandParameter="{Binding SelectedItem, ElementName=treeViewTerminalFileBrowser}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+
+        </TreeView>
+        <Button x:Name="buttonConnectionAbort" HorizontalAlignment="Left" Height="20" Width="75" Margin="180,0,0,10" VerticalAlignment="Bottom" Content="Przerwij" Command="{Binding Abort}" CommandParameter="{Binding ElementName=Window}"/>
+
+
+
+
+
+    </Grid>
+</Window>

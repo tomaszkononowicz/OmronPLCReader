@@ -7,13 +7,11 @@ using System.Windows.Input;
 
 namespace OmronPLCTemperatureReader.Commands
 {
-
     public class RelayCommand : ICommand
     {
         private Action<object> _execute;
         private Predicate<object> _canExecute;
         
-
         public RelayCommand(Action<object> execute, Predicate<object> canExecute)
         {
             this._execute = execute;

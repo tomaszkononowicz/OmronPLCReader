@@ -43,7 +43,7 @@ namespace OmronPLCTemperatureReader.ViewModels
                     SerieOnline serie = SeriesOnline[i] as SerieOnline;
                     if (serie != null)
                     {
-                        int? value = plc.getValue(serie.Dm);
+                        int? value = plc.GetValue(serie.Dm);
                         DateTime now = DateTime.Now;
                         if (value != null)
                         {
@@ -102,12 +102,14 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         public ObservableCollection<Serie> SeriesOnline { get; set; }
 
+        public ObservableCollection<Serie> SeriesUsb { get; set; }
+
         public string Version
         {
             get
             {
                 var productVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
-                return string.Format("v {0}", productVersion);
+                return string.Format("v{0}", productVersion);
             }
         }
 
@@ -127,6 +129,13 @@ namespace OmronPLCTemperatureReader.ViewModels
         public TableViewModel TableArchiveViewModel { get; private set; }
         public SeriesArchiveDataGridViewModel SeriesArchiveDataGridViewModel { get; private set; }
 
+
+        public ConnectionTerminalViewModel ConnectionTerminalViewModel { get; private set; }
+        private PlotModel plotUsb = new PlotModel();
+        public PlotViewModel PlotUsbViewModel { get; private set; }
+        public TableViewModel TableUsbViewModel { get; private set; }
+        public SeriesUsbDataGridViewModel SeriesUsbDataGridViewModel { get; private set; }
+
         private int selectedTabIndex;
         public int SelectedTabIndex {
             get
@@ -136,19 +145,43 @@ namespace OmronPLCTemperatureReader.ViewModels
             set
             {
                 selectedTabIndex = value;
-                if (selectedTabIndex > 1)
+                switch (selectedTabIndex)
                 {
-                    PlotViewModel.Visibility = Visibility.Collapsed;
-                    PlotArchiveViewModel.Visibility = Visibility.Visible;
-                    SeriesOnlineDataGridViewModel.Visibility = Visibility.Collapsed;
-                    SeriesArchiveDataGridViewModel.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    PlotViewModel.Visibility = Visibility.Visible;
-                    PlotArchiveViewModel.Visibility = Visibility.Collapsed;
-                    SeriesOnlineDataGridViewModel.Visibility = Visibility.Visible;
-                    SeriesArchiveDataGridViewModel.Visibility = Visibility.Collapsed;
+                    case 0:
+                    case 1:
+                        ConnectionViewModel.Visibility = Visibility.Visible;
+                        ConnectionTerminalViewModel.Visibility = Visibility.Collapsed;
+                        PlotViewModel.Visibility = Visibility.Visible;
+                        PlotArchiveViewModel.Visibility = Visibility.Collapsed;
+                        PlotUsbViewModel.Visibility = Visibility.Collapsed;
+                        SeriesOnlineDataGridViewModel.Visibility = Visibility.Visible;
+                        SeriesArchiveDataGridViewModel.Visibility = Visibility.Collapsed;
+                        SeriesUsbDataGridViewModel.Visibility = Visibility.Collapsed;
+                        break;
+                    case 2:
+                    case 3:
+                        ConnectionViewModel.Visibility = Visibility.Collapsed;
+                        ConnectionTerminalViewModel.Visibility = Visibility.Collapsed;
+                        PlotViewModel.Visibility = Visibility.Collapsed;
+                        PlotArchiveViewModel.Visibility = Visibility.Visible;
+                        PlotUsbViewModel.Visibility = Visibility.Collapsed;
+                        SeriesOnlineDataGridViewModel.Visibility = Visibility.Collapsed;
+                        SeriesArchiveDataGridViewModel.Visibility = Visibility.Visible;
+                        SeriesUsbDataGridViewModel.Visibility = Visibility.Collapsed;
+                        break;
+                    case 4:
+                    case 5:
+                        ConnectionViewModel.Visibility = Visibility.Collapsed;
+                        ConnectionTerminalViewModel.Visibility = Visibility.Visible;
+                        PlotViewModel.Visibility = Visibility.Collapsed;
+                        PlotArchiveViewModel.Visibility = Visibility.Collapsed;
+                        PlotUsbViewModel.Visibility = Visibility.Visible;
+                        SeriesOnlineDataGridViewModel.Visibility = Visibility.Collapsed;
+                        SeriesArchiveDataGridViewModel.Visibility = Visibility.Collapsed;
+                        SeriesUsbDataGridViewModel.Visibility = Visibility.Visible;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Wrong selected tab index: {selectedTabIndex}");
                 }
             }
         }
@@ -170,6 +203,14 @@ namespace OmronPLCTemperatureReader.ViewModels
                 LogsFilePrefix = Properties.Settings.Default.LogsFilePrefix;
                 SeriesOnlineDataGridViewModel.ImportSeriesFromFile(Properties.Settings.Default.SeriesFilePath);
                 SeriesOnlineDataGridViewModel.ImportConnectionFromFile(Properties.Settings.Default.SeriesFilePath);
+
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.TerminalIP))
+                {
+                    ConnectionTerminalViewModel.Ip = IPAddress.Parse(Properties.Settings.Default.TerminalIP);
+                }
+                ConnectionTerminalViewModel.Port = Properties.Settings.Default.TerminalPort;
+                ConnectionTerminalViewModel.Login = Properties.Settings.Default.TerminalLogin;
+                ConnectionTerminalViewModel.Password = Properties.Settings.Default.TerminalPassword;
                 return true;
             }
             catch
@@ -185,6 +226,7 @@ namespace OmronPLCTemperatureReader.ViewModels
             this.StringBuilder = new StringBuilder();
             SeriesOnline = new ObservableCollection<Serie>();
             SeriesArchive = new ObservableCollection<Serie>();
+            SeriesUsb = new ObservableCollection<Serie>();
 
             ConnectionViewModel = new ConnectionViewModel(this, plc);
             ConnectionViewModel.CommandHandler += ViewModel_CommandHandler;
@@ -208,6 +250,14 @@ namespace OmronPLCTemperatureReader.ViewModels
             TableArchiveViewModel.CommandHandler += ViewModel_CommandHandler;
             SeriesArchiveDataGridViewModel = new SeriesArchiveDataGridViewModel(this, SeriesArchive);
             SeriesArchiveDataGridViewModel.CommandHandler += ViewModel_CommandHandler;
+
+            ConnectionTerminalViewModel = new ConnectionTerminalViewModel(this);
+            PlotUsbViewModel = new PlotViewModel(this, plotUsb, SeriesUsb);
+            PlotUsbViewModel.CommandHandler += ViewModel_CommandHandler;
+            TableUsbViewModel = new TableViewModel(this, SeriesUsb);
+            TableUsbViewModel.CommandHandler += ViewModel_CommandHandler;
+            SeriesUsbDataGridViewModel = new SeriesUsbDataGridViewModel(this, SeriesUsb);
+            SeriesUsbDataGridViewModel.CommandHandler += ViewModel_CommandHandler;
 
             EditSettings = new RelayCommand(EditSettingsAction);
             LoadSettings();
@@ -279,14 +329,17 @@ namespace OmronPLCTemperatureReader.ViewModels
                 case "Plot.Refresh":
                     PlotViewModel.InvalidatePlot(true);
                     PlotArchiveViewModel.InvalidatePlot(true);
+                    PlotUsbViewModel.InvalidatePlot(true);
                     break;
                 case "Table.Refresh":
                     TableViewModel.Refresh();
                     TableArchiveViewModel.Refresh();
+                    TableUsbViewModel.Refresh();
                     break;
                 case "DataGrid.Refresh":
                     SeriesOnlineDataGridViewModel.Refresh();
                     SeriesArchiveDataGridViewModel.Refresh();
+                    SeriesUsbDataGridViewModel.Refresh();
                     break;             
             }
         }

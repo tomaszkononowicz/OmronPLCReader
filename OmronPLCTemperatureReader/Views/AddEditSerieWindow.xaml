@@ -9,9 +9,13 @@
         Title="{Binding WindowTitle}" Height="300" Width="277.154"
         x:Name="Window">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="99*"/>
+            <ColumnDefinition Width="170*"/>
+        </Grid.ColumnDefinitions>
         <Label x:Name="labelName" Content="Nazwa serii" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <Label x:Name="labelDm" Content="Numer DM" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="textBoxName" Height="23" Margin="85,14,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource textBoxError}">
+        <TextBox x:Name="textBoxName" Height="23" Margin="85,14,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource textBoxError}" Grid.ColumnSpan="2">
             <TextBox.Text>
                 <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
@@ -20,7 +24,7 @@
                 </Binding>
             </TextBox.Text>
         </TextBox>
-        <TextBox x:Name="textBoxDm" Height="23" Margin="85,42,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource textBoxError}">
+        <TextBox x:Name="textBoxDm" Height="23" Margin="85,42,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource textBoxError}" Grid.ColumnSpan="2">
             <TextBox.Text>
                 <Binding Path="Dm" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
@@ -29,8 +33,8 @@
                 </Binding>
             </TextBox.Text>
         </TextBox>
-        <Label x:Name="labelMultiplication" Content="Mnożnik danych" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="comboBoxMultiplication" Margin="112,70,10,0" VerticalAlignment="Top" Height="26" IsReadOnly="True" ItemsSource="{Binding Multipliers}" DisplayMemberPath="Key" SelectedItem="{Binding MultiplierSelectedItem}"/>
+        <Label x:Name="labelMultiplication" Content="Mnożnik danych" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <ComboBox x:Name="comboBoxMultiplication" Margin="13,70,10,0" VerticalAlignment="Top" Height="26" IsReadOnly="True" ItemsSource="{Binding Multipliers}" DisplayMemberPath="Key" SelectedItem="{Binding MultiplierSelectedItem}" Grid.Column="1"/>
 
 
         <Button x:Name="buttonSave" Content="Zapisz" Margin="10,0,0,10" Command="{Binding Save}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Left" Width="75" Height="20" VerticalAlignment="Bottom">
@@ -50,10 +54,10 @@
                 </Style>
             </Button.Style>
         </Button>
-        <Button x:Name="buttonCancel" Content="Anuluj" Margin="0,0,10,10" Command="{Binding Cancel}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom"/>
+        <Button x:Name="buttonCancel" Content="Anuluj" Margin="0,0,10,10" Command="{Binding Cancel}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom" Grid.Column="1"/>
 
-        <Separator Margin="10,0,10,43" Height="1" VerticalAlignment="Bottom"/>
-        
+        <Separator Margin="0,0,0,40" Height="1" VerticalAlignment="Bottom" Grid.ColumnSpan="2"/>
+
 
         <!--<ListBox x:Name="listBox" HorizontalAlignment="Left" Height="200" Margin="182,10,0,0" VerticalAlignment="Top" Width="100">
             <StackPanel Height="auto" Width="auto">

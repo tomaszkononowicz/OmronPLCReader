@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace OmronPLCTemperatureReader.ViewModels
@@ -15,6 +16,17 @@ namespace OmronPLCTemperatureReader.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<string> CommandHandler;
         public ViewModelBase ParentViewModel;
+
+        private Visibility visibility;
+        public Visibility Visibility
+        {
+            get { return visibility; }
+            set
+            {
+                visibility = value;
+                OnPropertyChanged(nameof(Visibility));
+            }
+        }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

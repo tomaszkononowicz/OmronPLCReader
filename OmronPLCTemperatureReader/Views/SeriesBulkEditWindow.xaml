@@ -1,0 +1,91 @@
+﻿<Window x:Class="OmronPLCTemperatureReader.Views.SeriesBulkEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:local="clr-namespace:OmronPLCTemperatureReader.Views"
+        xmlns:rule="clr-namespace:OmronPLCTemperatureReader.Common.ValidationRules"
+        mc:Ignorable="d"
+        Title="Edycja wszystkich serii" Height="500" Width="600"
+        x:Name="Window">
+    <Window.Resources>
+        <CollectionViewSource x:Key="Multipliers" Source="{Binding Multipliers}" />
+    </Window.Resources>
+    <Grid>
+
+
+        <Button x:Name="buttonSave" Content="Zapisz" Margin="10,0,0,10" Command="{Binding Save}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Left" Width="75" Height="20" VerticalAlignment="Bottom">
+            <!--<Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="IsEnabled" Value="false" />
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <Setter Property="IsEnabled" Value="true" />
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ElementName=textBoxName, Path=(Validation.HasError)}" Value="false" />
+                                <Condition Binding="{Binding ElementName=textBoxDm, Path=(Validation.HasError)}" Value="false" />
+                                <Condition Binding="{Binding ElementName=comboBoxMultiplication, Path=(Validation.HasError)}" Value="false" />
+                            </MultiDataTrigger.Conditions>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>-->
+        </Button>
+        <Button x:Name="buttonBulkImport" Content="Importuj właściowści serii" Margin="100,0,0,10" Command="{Binding BulkImport}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Left" Width="150" Height="20" VerticalAlignment="Bottom">
+        </Button>
+        <Button x:Name="buttonCancel" Content="Anuluj" Margin="0,0,10,10" Command="{Binding Cancel}" CommandParameter="{Binding ElementName=Window}" HorizontalAlignment="Right" Width="75" Height="20" VerticalAlignment="Bottom"/>
+        <DataGrid x:Name="dataGridAllSeries" ItemsSource="{Binding Series, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  Margin="0,0,0,40"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  CanUserReorderColumns="False"
+                  CanUserResizeRows="False"
+                  CanUserSortColumns="False"
+                  CanUserResizeColumns="False"
+                  AllowDrop="False"
+                  SelectionMode="Extended"
+                  AutoGenerateColumns="False"
+                  >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Nazwa" Binding="{Binding Name}"/>
+
+                <!--<DataGridTextColumn Binding="{Binding Dm, StringFormat=\{0:F\}}"/>-->
+
+                
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.HeaderTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=DataContext.AllSelected}">Widoczność</CheckBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.HeaderTemplate>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding Path=Visibility, UpdateSourceTrigger=PropertyChanged}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=DataContext.CheckedChange}" CommandParameter="{Binding ElementName=Window}" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=DataContext.CheckedChange}" CommandParameter="{Binding ElementName=Window}" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                
+                <DataGridComboBoxColumn Header="Mnożnik" ItemsSource="{Binding Source={StaticResource Multipliers}}" SelectedValueBinding="{Binding Multiplier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            SelectedValuePath="Value"
+                            DisplayMemberPath="Key" />
+            </DataGrid.Columns>
+            
+            
+            
+
+        </DataGrid>
+
+
+
+
+    </Grid>
+</Window>

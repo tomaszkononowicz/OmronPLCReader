@@ -290,9 +290,15 @@ namespace mcOMRON
 		{
 			try
 			{
+				this._transport.Close();
 				this._transport.Connect();
 
-				return NodeAddressDataSend();
+				bool nodeAddressDataSend = NodeAddressDataSend();
+				if (nodeAddressDataSend)
+                {
+					this._lastError = string.Empty;
+				}
+				return nodeAddressDataSend;
 			}
 			catch (Exception ex)
 			{
@@ -449,8 +455,8 @@ namespace mcOMRON
 				this._lastError = ex.Message;
 				return false;
 			}
-		} 
-		
+		}
+
 		#endregion
 
 
@@ -462,6 +468,7 @@ namespace mcOMRON
 		/// 
 		/// Must be executed once and before any other command. 
 		/// Return an ID for PLC and PC
+		/// Page 177 (Section 7-4-2 FINS/TCP Mode Specifications) of https://assets.omron.eu/downloads/manual/en/v4/w421_cj1w-etn21_cs1w-etn21_ethernet_units_-_construction_of_applications_operation_manual_en.pdf
 		/// </summary>
 		public bool NodeAddressDataSend()
 		{
@@ -491,7 +498,7 @@ namespace mcOMRON
 			//
 			if (respNADS[15] != 0)
 			{
-				this._lastError = "NASD command error: " + respNADS[15];
+				this._lastError = "NADS command error: " + respNADS[15];
 
 				// no more actions
 				//

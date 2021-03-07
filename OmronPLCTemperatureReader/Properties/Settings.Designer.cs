@@ -12,7 +12,7 @@ namespace OmronPLCTemperatureReader.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.6.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -25,7 +25,7 @@ namespace OmronPLCTemperatureReader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("192.168.100.10")]
         public string IP {
             get {
                 return ((string)(this["IP"]));
@@ -37,7 +37,7 @@ namespace OmronPLCTemperatureReader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("9600")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public ushort Port {
             get {
                 return ((ushort)(this["Port"]));
@@ -92,6 +92,78 @@ namespace OmronPLCTemperatureReader.Properties {
             }
             set {
                 this["LogsFilePrefix"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("192.168.100.11")]
+        public string TerminalIP {
+            get {
+                return ((string)(this["TerminalIP"]));
+            }
+            set {
+                this["TerminalIP"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public ushort TerminalPort {
+            get {
+                return ((ushort)(this["TerminalPort"]));
+            }
+            set {
+                this["TerminalPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TerminalLogin {
+            get {
+                return ((string)(this["TerminalLogin"]));
+            }
+            set {
+                this["TerminalLogin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TerminalPassword {
+            get {
+                return ((string)(this["TerminalPassword"]));
+            }
+            set {
+                this["TerminalPassword"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int TerminalConnectionTimeoutSeconds {
+            get {
+                return ((int)(this["TerminalConnectionTimeoutSeconds"]));
+            }
+            set {
+                this["TerminalConnectionTimeoutSeconds"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        public int PingTimeoutMiliseconds {
+            get {
+                return ((int)(this["PingTimeoutMiliseconds"]));
+            }
+            set {
+                this["PingTimeoutMiliseconds"] = value;
             }
         }
     }

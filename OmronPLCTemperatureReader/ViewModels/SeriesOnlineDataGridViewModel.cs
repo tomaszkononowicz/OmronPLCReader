@@ -126,7 +126,7 @@ namespace OmronPLCTemperatureReader.ViewModels
                     byte[] connectionInfo = Encoding.ASCII.GetBytes("<!--|" + mainWindowViewModel.ConnectionViewModel.Ip + "|" + mainWindowViewModel.ConnectionViewModel.Port + "|-->");
                     fs.Write(connectionInfo, 0, connectionInfo.Length);
                     fs.Close();
-                    MessageBox.Show("Serie wyeksportowane pomyślnie", "Eksport", MessageBoxButton.OK);
+                    MessageBox.Show("Serie wyeksportowane pomyślnie", "Eksport", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception e)
                 {
@@ -149,7 +149,7 @@ namespace OmronPLCTemperatureReader.ViewModels
 
                 if (importSeriesResult && importConnectionResult)
                 {
-                    MessageBox.Show("Serie oraz informacje o połączeniu zaimportowane pomyślnie", "Import", MessageBoxButton.OK);
+                    MessageBox.Show("Serie oraz informacje o połączeniu zaimportowane pomyślnie", "Import", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else if (importSeriesResult)
                 {
@@ -170,6 +170,10 @@ namespace OmronPLCTemperatureReader.ViewModels
 
         public bool ImportSeriesFromFile(string filePath)
         {
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                return false;
+            }
             try
             {
                 using (FileStream fs = new FileStream(filePath, FileMode.Open))
